@@ -19,21 +19,20 @@ class ActivityLevelViewModel @Inject constructor(
     private val userDataStore: UserDataStore
 ) : ViewModel() {
 
-    var selectedGoalType by mutableStateOf<ActivityLevel>(ActivityLevel.Medium)
+    var selectedActivityLevel by mutableStateOf<ActivityLevel>(ActivityLevel.Medium)
         private set
 
     private val _uiEvent = Channel<UiEvent>()
     val uiEvent = _uiEvent.receiveAsFlow()
 
     fun onActivityLevelClick(level: ActivityLevel) {
-        selectedGoalType = level
+        selectedActivityLevel = level
     }
 
     fun onNextClick() {
         viewModelScope.launch {
-            userDataStore.saveActivityLevel(level = selectedGoalType)
+            userDataStore.saveActivityLevel(level = selectedActivityLevel)
             _uiEvent.send(UiEvent.Navigate)
-
         }
     }
 }

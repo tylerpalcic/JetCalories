@@ -11,8 +11,7 @@ import kotlin.math.roundToInt
 class CalculateMealNutrients(
 
 ) {
-
-    suspend fun execute(trackedFoods: List<TrackedFood>, userInfo: UserInfo): Result {
+    fun execute(trackedFoods: List<TrackedFood>, userInfo: UserInfo): Result {
         val allNutrients = trackedFoods
             .groupBy { it.mealType }
             .mapValues { entry ->
@@ -51,21 +50,23 @@ class CalculateMealNutrients(
     }
 
     private fun bmr(userInfo: UserInfo): Int {
+        // height is in inches, convert it to centimeters for formula
+        val heightInCm = userInfo.height * 2.54f
         return when(userInfo.gender) {
             is Gender.Male -> {
-                (66.47f + 13.75f * userInfo.weight +
-                        5f * userInfo.height - 6.75f * userInfo.age).roundToInt()
+                (66.47f + 6.23f * userInfo.weight +
+                        5f * heightInCm - 6.75f * userInfo.age).roundToInt()
             }
             is Gender.Female ->  {
-                (665.09f + 9.56f * userInfo.weight +
-                        1.84f * userInfo.height - 4.67 * userInfo.age).roundToInt()
+                (665.09f + 4.34f * userInfo.weight +
+                        1.84f * heightInCm - 4.67f * userInfo.age).roundToInt()
             }
         }
     }
 
     private fun dailyCalorieRequirement(userInfo: UserInfo): Int {
         val activityFactor = when(userInfo.activityLevel) {
-            is ActivityLevel.Low -> 1.2f
+            is ActivityLevel.Low -> 1f
             is ActivityLevel.Medium -> 1.3f
             is ActivityLevel.High -> 1.4f
         }

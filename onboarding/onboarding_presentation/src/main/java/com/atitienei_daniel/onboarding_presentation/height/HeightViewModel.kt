@@ -20,7 +20,7 @@ class HeightViewModel @Inject constructor(
     private val filterOutDigits: FilterOutDigits
 ) : ViewModel() {
 
-    var height by mutableStateOf("170")
+    var height by mutableStateOf("69")
         private set
 
     private val _uiEvent = Channel<UiEvent>()

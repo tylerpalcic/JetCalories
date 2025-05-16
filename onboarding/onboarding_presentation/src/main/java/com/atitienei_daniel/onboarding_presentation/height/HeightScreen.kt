@@ -77,7 +77,7 @@ fun HeightScreen(
             UnitTextField(
                 value = viewModel.height,
                 onValueChange = viewModel::onHeightValueChange,
-                unit = "cm"
+                unit = "in"
             )
         }
     }

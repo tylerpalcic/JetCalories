@@ -77,7 +77,7 @@ fun WeightScreen(
             UnitTextField(
                 value = viewModel.weight,
                 onValueChange = viewModel::onWeightValueChange,
-                unit = "kg"
+                unit = "lbs"
             )
         }
     }

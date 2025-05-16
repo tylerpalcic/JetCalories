@@ -67,13 +67,13 @@ fun ActivityLevelScreen(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(text = "What's your activity level?")
-            Spacer(modifier = androidx.compose.ui.Modifier.height(spacing.spaceMedium))
+            Spacer(modifier = Modifier.height(spacing.spaceMedium))
             Row(
                 horizontalArrangement = Arrangement.spacedBy(spacing.spaceSmall)
             ) {
                 SelectableButton(
                     text = "Low",
-                    isSelected = viewModel.selectedGoalType is ActivityLevel.Low,
+                    isSelected = viewModel.selectedActivityLevel is ActivityLevel.Low,
                     color = MaterialTheme.colorScheme.primaryContainer,
                     selectedTextColor = MaterialTheme.colorScheme.onPrimaryContainer,
                     onClick = {
@@ -83,7 +83,7 @@ fun ActivityLevelScreen(
 
                 SelectableButton(
                     text = "Medium",
-                    isSelected = viewModel.selectedGoalType is ActivityLevel.Medium,
+                    isSelected = viewModel.selectedActivityLevel is ActivityLevel.Medium,
                     color = MaterialTheme.colorScheme.primaryContainer,
                     selectedTextColor = MaterialTheme.colorScheme.onPrimaryContainer,
                     onClick = {
@@ -93,7 +93,7 @@ fun ActivityLevelScreen(
 
                 SelectableButton(
                     text = "High",
-                    isSelected = viewModel.selectedGoalType is ActivityLevel.High,
+                    isSelected = viewModel.selectedActivityLevel is ActivityLevel.High,
                     color = MaterialTheme.colorScheme.primaryContainer,
                     selectedTextColor = MaterialTheme.colorScheme.onPrimaryContainer,
                     onClick = {

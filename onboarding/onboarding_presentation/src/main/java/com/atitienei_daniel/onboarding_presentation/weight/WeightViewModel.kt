@@ -20,7 +20,7 @@ class WeightViewModel @Inject constructor(
     private val filterOutDigits: FilterOutDigits
 ) : ViewModel() {
 
-    var weight by mutableStateOf("70.0")
+    var weight by mutableStateOf("160.0")
         private set
 
     private val _uiEvent = Channel<UiEvent>()

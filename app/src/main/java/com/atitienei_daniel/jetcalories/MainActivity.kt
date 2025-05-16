@@ -99,10 +99,10 @@ class MainActivity : ComponentActivity() {
                             }
                         )
                     }
-                    composable(Route.activityLevel) {
-                        ActivityLevelScreen(
+                    composable(Route.gender) {
+                        GenderScreen(
                             onNextClick = {
-                                navController.navigate(Route.goal)
+                                navController.navigate(Route.age)
                             }
                         )
                     }
@@ -114,7 +114,15 @@ class MainActivity : ComponentActivity() {
                         )
                     }
                     composable(Route.height) {
+                        // TODO add inches option
                         HeightScreen(
+                            onNextClick = {
+                                navController.navigate(Route.weight)
+                            }
+                        )
+                    }
+                    composable(Route.weight) {
+                        WeightScreen(
                             onNextClick = {
                                 navController.navigate(Route.goal)
                             }
@@ -124,18 +132,21 @@ class MainActivity : ComponentActivity() {
                         GoalScreen(
                             onNextClick = {
                                 navController.navigate(Route.nutrientGoal)
-                            }
-                        )
-                    }
-                    composable(Route.gender) {
-                        GenderScreen(
-                            onNextClick = {
-                                navController.navigate(Route.age)
-                            }
+                            },
+//                            onSkipClick = {
+//                                navController.navigate(Route.trackerOverview)
+//                            }
                         )
                     }
                     composable(Route.nutrientGoal) {
                         NutrientGoalScreen(
+                            onNextClick = {
+                                navController.navigate(Route.activityLevel)
+                            }
+                        )
+                    }
+                    composable(Route.activityLevel) {
+                        ActivityLevelScreen(
                             onNextClick = {
                                 navController.navigate(Route.trackerOverview)
                             }
@@ -188,13 +199,6 @@ class MainActivity : ComponentActivity() {
                                         .replace("{month}", month.toString())
                                         .replace("{year}", year.toString())
                                 )
-                            }
-                        )
-                    }
-                    composable(Route.weight) {
-                        WeightScreen(
-                            onNextClick = {
-                                navController.navigate(Route.height)
                             }
                         )
                     }

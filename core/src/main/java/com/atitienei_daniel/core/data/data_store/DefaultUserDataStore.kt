@@ -78,7 +78,7 @@ class DefaultUserDataStore(
                 age = preferences[UserDataStore.ageKey] ?: -1,
                 gender = Gender.fromString(preferences[UserDataStore.genderKey] ?: "male"),
                 activityLevel = ActivityLevel.fromString(
-                    preferences[UserDataStore.activityLevelKey] ?: "medium"
+                    preferences[UserDataStore.activityLevelKey] ?: "none"
                 ),
                 goalType = GoalType.fromString(
                     preferences[UserDataStore.goalTypeKey] ?: "keep_weight"
