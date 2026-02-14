@@ -1,15 +1,31 @@
-package com.atitienei_daniel.core.navigation
+package com.atitienei_daniel.jetcalories.navigation
 
-object Route {
-    const val welcome = "welcome"
-    const val age = "age"
-    const val gender = "gender"
-    const val height = "height"
-    const val weight = "weight"
-    const val nutrientGoal = "nutrient_goal"
-    const val activityLevel = "activity"
-    const val goal = "goal"
+sealed class Route(val route: String) {
+    object Welcome : Route("welcome")
+    object Age : Route("age")
+    object Gender : Route("gender")
+    object Height : Route("height")
+    object Weight : Route("weight")
+    object NutrientGoal : Route("nutrient_goal")
+    object ActivityLevel : Route("activity")
+    object Goal : Route("goal")
+    object TrackerOverview : Route("tracker_overview")
 
-    const val trackerOverview = "tracker_overview"
-    const val search = "search/{mealName}/{dayOfMonth}/{month}/{year}"
+    object Search : Route("search/{mealName}/{dayOfMonth}/{month}/{year}") {
+        fun createRoute(
+            mealName: String,
+            dayOfMonth: Int,
+            month: Int,
+            year: Int
+        ) = "search/$mealName/$dayOfMonth/$month/$year"
+    }
+
+    object AddFoodItem : Route("add_food_item/{mealName}/{dayOfMonth}/{month}/{year}") {
+        fun createRoute(
+            mealName: String,
+            dayOfMonth: Int,
+            month: Int,
+            year: Int
+        ) = "add_food_item/$mealName/$dayOfMonth/$month/$year"
+    }
 }

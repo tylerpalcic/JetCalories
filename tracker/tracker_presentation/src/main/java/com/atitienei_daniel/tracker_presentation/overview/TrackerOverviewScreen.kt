@@ -23,9 +23,13 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -39,104 +43,106 @@ import com.atitienei_daniel.tracker_presentation.overview.components.TrackedFood
 @Composable
 fun TrackerOverviewScreen(
     onNavigateToSearch: (String, Int, Int, Int) -> Unit,
+    onNavigateToAddItem: (String, Int, Int, Int) -> Unit,
     viewModel: TrackerOverviewViewModel = hiltViewModel()
 ) {
     val spacing = LocalSpacing.current
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val userInfo by viewModel.userInfo.collectAsStateWithLifecycle()
 
-    Scaffold { innerPadding ->
-        LazyColumn(
-            modifier = Modifier.fillMaxSize(),
-            contentPadding = PaddingValues(
-                bottom = innerPadding.calculateBottomPadding() + 15.dp,
-            ),
-            verticalArrangement = Arrangement.spacedBy(spacing.spaceMedium)
-        ) {
-            item {
-                NutrientsHeader(state = uiState)
-            }
-            item {
-                DaySelector(
-                    date = uiState.date,
-                    onPreviousDayClick = {
-                        viewModel.onEvent(TrackerOverviewEvent.OnPreviousDayClick)
-                    },
-                    onNextDayClick = {
-                        viewModel.onEvent(TrackerOverviewEvent.OnNextDayClick)
-                    },
+    LazyColumn(
+        modifier = Modifier.fillMaxSize(),
+        contentPadding = PaddingValues(bottom = spacing.spaceMedium),
+        verticalArrangement = Arrangement.spacedBy(spacing.spaceMedium)
+    ) {
+        item {
+            NutrientsHeader(state = uiState)
+        }
+        item {
+            DaySelector(
+                date = uiState.date,
+                onPreviousDayClick = {
+                    viewModel.onEvent(TrackerOverviewEvent.OnPreviousDayClick)
+                },
+                onNextDayClick = {
+                    viewModel.onEvent(TrackerOverviewEvent.OnNextDayClick)
+                },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = spacing.spaceMedium)
+            )
+        }
+        items(uiState.meals) { meal ->
+            ExpandableMeal(
+                meal = meal,
+                onToggleClick = {
+                    viewModel.onEvent(TrackerOverviewEvent.OnToggleMealClick(meal))
+                },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = spacing.spaceMedium)
+            ) {
+                Column(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(horizontal = spacing.spaceMedium)
-                )
-            }
-            items(uiState.meals) { meal ->
-                ExpandableMeal(
-                    meal = meal,
-                    onToggleClick = {
-                        viewModel.onEvent(TrackerOverviewEvent.OnToggleMealClick(meal))
-                    },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = spacing.spaceMedium)
+                        .padding(horizontal = spacing.spaceSmall)
                 ) {
-                    Column(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = spacing.spaceSmall)
-                    ) {
-                        val foods = uiState.trackedFoods.filter {
-                            it.mealType == meal.mealType
-                        }
-                        foods.forEach { trackedFood ->
-                            TrackedFoodItem(
-                                food = trackedFood,
-                                onDeleteClick = {
-                                    viewModel.onEvent(
-                                        TrackerOverviewEvent.OnDeleteTrackedFoodClick(trackedFood)
-                                    )
-                                }
-                            )
-                            Spacer(modifier = Modifier.height(spacing.spaceMedium))
-                        }
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.spacedBy(spacing.spaceSmall)
-                        ) {
-                            OutlinedButton(
-                                onClick = {
-//                                    onNavigateToAddItem()
-                                },
-                                border = BorderStroke(
-                                    width = 1.dp,
-                                    color = MaterialTheme.colorScheme.primary
-                                ),
-                            ) {
-                                Icon(imageVector = Icons.Rounded.Add, contentDescription = null)
-                                Spacer(modifier = Modifier.width(spacing.spaceSmall))
-                                Text(text = "Add ${meal.name}")
-                            }
-                            OutlinedButton(
-                                onClick = {
-                                    onNavigateToSearch(
-                                        meal.name,
-                                        uiState.date.dayOfMonth,
-                                        uiState.date.monthValue,
-                                        uiState.date.year
-                                    )
-                                },
-                                border = BorderStroke(
-                                    width = 1.dp,
-                                    color = MaterialTheme.colorScheme.primary
-                                ),
-                            ) {
-                                Icon(imageVector = Icons.Rounded.Search, contentDescription = null)
-                                Spacer(modifier = Modifier.width(spacing.spaceSmall))
-                                Text(text = "Search ${meal.name}")
-                            }
-                        }
-
+                    val foods = uiState.trackedFoods.filter {
+                        it.mealType == meal.mealType
                     }
+                    foods.forEach { trackedFood ->
+                        TrackedFoodItem(
+                            food = trackedFood,
+                            onDeleteClick = {
+                                viewModel.onEvent(
+                                    TrackerOverviewEvent.OnDeleteTrackedFoodClick(trackedFood)
+                                )
+                            }
+                        )
+                        Spacer(modifier = Modifier.height(spacing.spaceMedium))
+                    }
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(spacing.spaceSmall)
+                    ) {
+                        OutlinedButton(
+                            onClick = {
+                                onNavigateToAddItem(
+                                    meal.name,
+                                    uiState.date.dayOfMonth,
+                                    uiState.date.monthValue,
+                                    uiState.date.year
+                                )
+                            },
+                            border = BorderStroke(
+                                width = 1.dp,
+                                color = MaterialTheme.colorScheme.primary
+                            ),
+                        ) {
+                            Icon(imageVector = Icons.Rounded.Add, contentDescription = null)
+                            Spacer(modifier = Modifier.width(spacing.spaceSmall))
+                            Text(text = "Add ${meal.name}")
+                        }
+                        OutlinedButton(
+                            onClick = {
+                                onNavigateToSearch(
+                                    meal.name,
+                                    uiState.date.dayOfMonth,
+                                    uiState.date.monthValue,
+                                    uiState.date.year
+                                )
+                            },
+                            border = BorderStroke(
+                                width = 1.dp,
+                                color = MaterialTheme.colorScheme.primary
+                            ),
+                        ) {
+                            Icon(imageVector = Icons.Rounded.Search, contentDescription = null)
+                            Spacer(modifier = Modifier.width(spacing.spaceSmall))
+                            Text(text = "Search ${meal.name}")
+                        }
+                    }
+
                 }
             }
         }

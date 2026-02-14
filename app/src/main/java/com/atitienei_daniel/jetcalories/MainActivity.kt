@@ -263,17 +263,25 @@ class MainActivity : ComponentActivity() {
                                         )
                                     )
                                 },
-                                onNavigateToAddItem = { mealName ->
-                                    navController.navigate(Route.AddFoodItem.createRoute(mealName))
+                                onNavigateToAddItem = { mealName, dayOfMonth, month, year ->
+                                    navController.navigate(
+                                        Route.AddFoodItem.createRoute(
+                                            mealName = mealName,
+                                            dayOfMonth = dayOfMonth,
+                                            month = month,
+                                            year = year
+                                        )
+                                    )
                                 }
                             )
                         }
                         composable(
                             route = Route.AddFoodItem.route,
                             arguments = listOf(
-                                navArgument("mealName") {
-                                    type = NavType.StringType
-                                }
+                                navArgument("mealName") { type = NavType.StringType },
+                                navArgument("dayOfMonth") { type = NavType.IntType },
+                                navArgument("month") { type = NavType.IntType },
+                                navArgument("year") { type = NavType.IntType },
                             )
                         ) {
                             AddFoodItemScreen(
