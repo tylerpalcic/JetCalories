@@ -1,25 +1,40 @@
 package com.atitienei_daniel.tracker_presentation.add_food_item
 
-import androidx.compose.foundation.layout.*
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExposedDropdownMenuBox
+import androidx.compose.material3.ExposedDropdownMenuDefaults
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.material3.TopAppBar
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
+import com.atitienei_daniel.core.util.UiEvent
 import com.atitienei_daniel.tracker_domain.model.MealType
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddFoodItemScreen(
-    onAddItem: (
-        name: String,
-        calories: Int,
-        protein: Int,
-        carbs: Int,
-        fat: Int,
-        mealType: MealType
-    ) -> Unit
+    viewModel: AddFoodItemViewModel = hiltViewModel(),
+    onItemAdded: (String) -> Unit,
+    addItemOnClick: () -> Unit
 ) {
     var name by remember { mutableStateOf("") }
     var calories by remember { mutableStateOf("0") }
@@ -27,7 +42,15 @@ fun AddFoodItemScreen(
     var carbs by remember { mutableStateOf("0") }
     var fat by remember { mutableStateOf("0") }
     var expanded by remember { mutableStateOf(false) }
-    var selectedMeal by remember { mutableStateOf(MealType.BreakFast) }
+    var selectedMeal: MealType by remember { mutableStateOf(MealType.BreakFast) }
+
+    LaunchedEffect(Unit) {
+        viewModel.uiEvent.collect { event ->
+            if (event is UiEvent.ShowSnackBar) {
+                onItemAdded(event.message)
+            }
+        }
+    }
 
     Scaffold(
         topBar = {
@@ -89,14 +112,21 @@ fun AddFoodItemScreen(
                     trailingIcon = {
                         ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded)
                     },
-                    modifier = Modifier.fillMaxWidth().menuAnchor()
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .menuAnchor()
                 )
 
                 ExposedDropdownMenu(
                     expanded = expanded,
                     onDismissRequest = { expanded = false }
                 ) {
-                    MealType.values().forEach { meal ->
+                    listOf(
+                        MealType.BreakFast,
+                        MealType.Lunch,
+                        MealType.Dinner,
+                        MealType.Snack
+                    ).forEach { meal ->
                         DropdownMenuItem(
                             text = { Text(meal.name) },
                             onClick = {
@@ -110,7 +140,7 @@ fun AddFoodItemScreen(
 
             Button(
                 onClick = {
-                    onAddItem(
+                    viewModel.onAddItem(
                         name,
                         calories.toInt(),
                         protein.toInt(),
@@ -118,6 +148,7 @@ fun AddFoodItemScreen(
                         fat.toInt(),
                         selectedMeal
                     )
+                    addItemOnClick()
                 },
                 modifier = Modifier.fillMaxWidth()
             ) {

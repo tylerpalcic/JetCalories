@@ -44,7 +44,7 @@ import com.atitienei_daniel.onboarding_presentation.height.HeightScreen
 import com.atitienei_daniel.onboarding_presentation.nutrient_goal.NutrientGoalScreen
 import com.atitienei_daniel.onboarding_presentation.weight.WeightScreen
 import com.atitienei_daniel.onboarding_presentation.welcome.WelcomeScreen
-import com.atitienei_daniel.tracker_presentation.overview.components.AddFoodItemScreen
+import com.atitienei_daniel.tracker_presentation.add_food_item.AddFoodItemScreen
 import com.atitienei_daniel.tracker_presentation.overview.TrackerOverviewScreen
 import com.atitienei_daniel.tracker_presentation.search.SearchScreen
 import com.google.android.play.core.appupdate.AppUpdateManager
