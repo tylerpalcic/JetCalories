@@ -1,12 +1,9 @@
 @file:OptIn(
-    ExperimentalComposeUiApi::class, ExperimentalMaterial3Api::class,
-    ExperimentalAnimationApi::class
+    ExperimentalComposeUiApi::class, ExperimentalMaterial3Api::class
 )
 
 package com.atitienei_daniel.tracker_presentation.search
 
-import androidx.compose.animation.AnimatedContent
-import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -23,6 +20,7 @@ import androidx.compose.material.icons.rounded.Search
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
@@ -117,54 +115,63 @@ fun SearchScreen(
                     Text(text = "Search...")
                 },
                 trailingIcon = {
-                    Icon(imageVector = Icons.Rounded.Search, contentDescription = null)
+                    IconButton(onClick = {
+                        keyboardController?.hide()
+                        viewModel.onEvent(SearchEvent.OnSearch)
+                    }) {
+                        Icon(imageVector = Icons.Rounded.Search, contentDescription = null)
+                    }
                 },
                 modifier = Modifier.fillMaxWidth()
             )
             Spacer(modifier = Modifier.height(spacing.spaceMedium))
-            LazyColumn(modifier = Modifier.fillMaxSize()) {
-                items(uiState.trackableFood) { food ->
-                    TrackableFoodItem(
-                        trackableFoodUiState = food,
-                        onClick = {
-                            viewModel.onEvent(SearchEvent.OnToggleTrackableFood(food.food))
-                        },
-                        onAmountChange = {
-                            viewModel.onEvent(
-                                SearchEvent.OnAmountForFoodChange(
-                                    food.food, it
-                                )
-                            )
-                        },
-                        onTrack = {
-                            keyboardController?.hide()
-                            viewModel.onEvent(
-                                SearchEvent.OnTrackFoodClick(
-                                    food = food.food,
-                                    mealType = MealType.fromString(mealName),
-                                    date = LocalDate.of(year, month, dayOfMonth)
-                                )
-                            )
-                        },
-                        modifier = Modifier.fillMaxWidth()
+            if (uiState.isSearching) {
+                Box(
+                    modifier = Modifier.fillMaxWidth().weight(1f),
+                    contentAlignment = Alignment.Center
+                ) {
+                    CircularProgressIndicator()
+                }
+            } else if (uiState.trackableFood.isEmpty() && uiState.query.isNotBlank()) {
+                Box(
+                    modifier = Modifier.fillMaxWidth().weight(1f),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = "No results",
+                        textAlign = TextAlign.Center
                     )
                 }
-            }
-        }
-
-        AnimatedContent(targetState = uiState) {
-            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                when {
-                    it.isSearching -> CircularProgressIndicator()
-                    it.trackableFood.isEmpty() -> {
-                        Text(
-                            text = "No results",
-                            textAlign = TextAlign.Center
+            } else {
+                LazyColumn(modifier = Modifier.fillMaxSize()) {
+                    items(uiState.trackableFood) { food ->
+                        TrackableFoodItem(
+                            trackableFoodUiState = food,
+                            onClick = {
+                                viewModel.onEvent(SearchEvent.OnToggleTrackableFood(food.food))
+                            },
+                            onAmountChange = {
+                                viewModel.onEvent(
+                                    SearchEvent.OnAmountForFoodChange(
+                                        food.food, it
+                                    )
+                                )
+                            },
+                            onTrack = {
+                                keyboardController?.hide()
+                                viewModel.onEvent(
+                                    SearchEvent.OnTrackFoodClick(
+                                        food = food.food,
+                                        mealType = MealType.fromString(mealName),
+                                        date = LocalDate.of(year, month, dayOfMonth)
+                                    )
+                                )
+                            },
+                            modifier = Modifier.fillMaxWidth()
                         )
                     }
                 }
             }
-
         }
     }
 }
