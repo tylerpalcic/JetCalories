@@ -23,9 +23,9 @@ class CalculateMealNutrientsTest {
     @Test
     fun `male medium activity lose weight gives correct calorie goal`() {
         // Male, 30y, 180 lbs, 70 in, Medium, LoseWeight
-        // BMR = 4.536*180 + 15.875*70 - 5*30 + 5 = 1782
-        // TDEE = 1782 * 1.375 = 2450 (rounded)
-        // Goal = 2450 - 750 = 1700
+        // BMR = 4.536*180 + 15.875*70 - 5*30 + 5 = 1782.73 -> 1783
+        // TDEE = 1783 * 1.375 = 2451.625 -> 2452
+        // Goal = 2452 - 750 = 1702
         val userInfo = UserInfo(
             gender = Gender.Male,
             age = 30,
@@ -38,7 +38,7 @@ class CalculateMealNutrientsTest {
             fatRatio = 0.3f
         )
         val result = calculateMealNutrients.execute(emptyList(), userInfo)
-        assertThat(result.caloriesGoal).isEqualTo(1700)
+        assertThat(result.caloriesGoal).isEqualTo(1702)
     }
 
     @Test
@@ -97,9 +97,9 @@ class CalculateMealNutrientsTest {
             fatRatio = 0.3f
         )
         val result = calculateMealNutrients.execute(emptyList(), userInfo)
-        // 1700 * 0.4 / 4 = 170g carbs
-        // 1700 * 0.3 / 4 = 128g protein (127.5 rounds to 128)
-        // 1700 * 0.3 / 9 = 57g fat (56.67 rounds to 57)
+        // 1702 * 0.4 / 4 = 170.2 -> 170g carbs
+        // 1702 * 0.3 / 4 = 127.65 -> 128g protein
+        // 1702 * 0.3 / 9 = 56.73 -> 57g fat
         assertThat(result.carbsGoal).isEqualTo(170)
         assertThat(result.proteinGoal).isEqualTo(128)
         assertThat(result.fatGoal).isEqualTo(57)

@@ -50,33 +50,31 @@ class CalculateMealNutrients(
     }
 
     private fun bmr(userInfo: UserInfo): Int {
-        // height is in inches, convert it to centimeters for formula
-        val heightInCm = userInfo.height * 2.54f
-        return when(userInfo.gender) {
-            is Gender.Male -> {
-                (66.47f + 6.23f * userInfo.weight +
-                        5f * heightInCm - 6.75f * userInfo.age).roundToInt()
-            }
-            is Gender.Female ->  {
-                (665.09f + 4.34f * userInfo.weight +
-                        1.84f * heightInCm - 4.67f * userInfo.age).roundToInt()
-            }
+    return when (userInfo.gender) {
+        is Gender.Male -> {
+            (4.536f * userInfo.weight + 15.875f * userInfo.height -
+                    5f * userInfo.age + 5f).roundToInt()
+        }
+        is Gender.Female -> {
+            (4.536f * userInfo.weight + 15.875f * userInfo.height -
+                    5f * userInfo.age - 161f).roundToInt()
         }
     }
+}
 
     private fun dailyCalorieRequirement(userInfo: UserInfo): Int {
-        val activityFactor = when(userInfo.activityLevel) {
-            is ActivityLevel.Low -> 1f
-            is ActivityLevel.Medium -> 1.3f
-            is ActivityLevel.High -> 1.4f
-        }
-        val calorieExtra = when(userInfo.goalType) {
-            is GoalType.LoseWeight -> -500
-            is GoalType.KeepWeight -> 0
-            is GoalType.GainWeight -> 500
-        }
-        return (bmr(userInfo) * activityFactor + calorieExtra).roundToInt()
+    val activityFactor = when (userInfo.activityLevel) {
+        is ActivityLevel.Low -> 1.2f
+        is ActivityLevel.Medium -> 1.375f
+        is ActivityLevel.High -> 1.55f
     }
+    val calorieExtra = when (userInfo.goalType) {
+        is GoalType.LoseWeight -> -750
+        is GoalType.KeepWeight -> 0
+        is GoalType.GainWeight -> 750
+    }
+    return (bmr(userInfo) * activityFactor + calorieExtra).roundToInt()
+}
 
     data class MealNutrients(
         val carbs: Int,
