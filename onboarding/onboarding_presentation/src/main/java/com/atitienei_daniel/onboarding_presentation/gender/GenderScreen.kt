@@ -57,54 +57,40 @@ private fun GenderScreenContent(
 ) {
     val spacing = LocalSpacing.current
 
-    Scaffold(
-        floatingActionButton = {
-            ExtendedFloatingActionButton(
-                text = { Text(text = "Next") },
-                icon = {
-                    Icon(
-                        imageVector = Icons.Rounded.ArrowForward,
-                        contentDescription = null
-                    )
-                },
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(spacing.spaceLarge),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Text(
+            text = "What's your gender?",
+            style = MaterialTheme.typography.headlineSmall
+        )
+        Spacer(modifier = Modifier.height(spacing.spaceMedium))
+        Row(
+            horizontalArrangement = Arrangement.spacedBy(spacing.spaceSmall)
+        ) {
+            SelectableButton(
+                text = Gender.Male.name,
+                isSelected = selectedGender is Gender.Male,
+                color = MaterialTheme.colorScheme.primaryContainer,
+                selectedTextColor = MaterialTheme.colorScheme.onPrimaryContainer,
                 onClick = {
-                    onNextClick()
+                    onGenderClick(Gender.Male)
                 }
             )
-        }
-    ) { innerPadding ->
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(innerPadding),
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Text(text = "What's your gender?")
-            Spacer(modifier = Modifier.height(spacing.spaceMedium))
-            Row(
-                horizontalArrangement = Arrangement.spacedBy(spacing.spaceSmall)
-            ) {
-                SelectableButton(
-                    text = Gender.Male.name,
-                    isSelected = selectedGender is Gender.Male,
-                    color = MaterialTheme.colorScheme.primaryContainer,
-                    selectedTextColor = MaterialTheme.colorScheme.onPrimaryContainer,
-                    onClick = {
-                        onGenderClick(Gender.Male)
-                    }
-                )
 
-                SelectableButton(
-                    text = Gender.Female.name,
-                    isSelected = selectedGender is Gender.Female,
-                    color = MaterialTheme.colorScheme.primaryContainer,
-                    selectedTextColor = MaterialTheme.colorScheme.onPrimaryContainer,
-                    onClick = {
-                        onGenderClick(Gender.Female)
-                    }
-                )
-            }
+            SelectableButton(
+                text = Gender.Female.name,
+                isSelected = selectedGender is Gender.Female,
+                color = MaterialTheme.colorScheme.primaryContainer,
+                selectedTextColor = MaterialTheme.colorScheme.onPrimaryContainer,
+                onClick = {
+                    onGenderClick(Gender.Female)
+                }
+            )
         }
     }
 }

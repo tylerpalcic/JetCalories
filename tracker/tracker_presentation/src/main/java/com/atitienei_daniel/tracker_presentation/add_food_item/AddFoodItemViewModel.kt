@@ -28,7 +28,7 @@ class AddFoodItemViewModel @Inject constructor(
             MealType.values().find {
                 it.name.equals(name, ignoreCase = true)
             }
-        } ?: MealType.BreakFast
+        } ?: MealType.Breakfast
 
     private val date: LocalDate = run {
         val dayOfMonth = savedStateHandle.get<Int>("dayOfMonth") ?: LocalDate.now().dayOfMonth

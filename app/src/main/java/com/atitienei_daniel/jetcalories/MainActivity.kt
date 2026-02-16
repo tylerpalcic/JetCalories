@@ -35,14 +35,20 @@ import com.atitienei_daniel.core.domain.data_store.UserDataStore
 import com.atitienei_daniel.jetcalories.navigation.Route
 import com.atitienei_daniel.jetcalories.ui.theme.JetCaloriesTheme
 import com.atitienei_daniel.onboarding_presentation.activity_level.ActivityLevelScreen
+import com.atitienei_daniel.onboarding_presentation.activity_level.ActivityLevelViewModel
 import com.atitienei_daniel.onboarding_presentation.age.AgeScreen
 import com.atitienei_daniel.onboarding_presentation.age.AgeViewModel
 import com.atitienei_daniel.onboarding_presentation.gender.GenderScreen
 import com.atitienei_daniel.onboarding_presentation.gender.GenderViewModel
 import com.atitienei_daniel.onboarding_presentation.goal.GoalScreen
+import com.atitienei_daniel.onboarding_presentation.goal.GoalViewModel
 import com.atitienei_daniel.onboarding_presentation.height.HeightScreen
+import com.atitienei_daniel.onboarding_presentation.height.HeightViewModel
+import com.atitienei_daniel.onboarding_presentation.nutrient_goal.NutrientGoalEvent
 import com.atitienei_daniel.onboarding_presentation.nutrient_goal.NutrientGoalScreen
+import com.atitienei_daniel.onboarding_presentation.nutrient_goal.NutrientGoalViewModel
 import com.atitienei_daniel.onboarding_presentation.weight.WeightScreen
+import com.atitienei_daniel.onboarding_presentation.weight.WeightViewModel
 import com.atitienei_daniel.onboarding_presentation.welcome.WelcomeScreen
 import com.atitienei_daniel.tracker_presentation.add_food_item.AddFoodItemScreen
 import com.atitienei_daniel.tracker_presentation.overview.TrackerOverviewScreen
@@ -116,10 +122,23 @@ class MainActivity : ComponentActivity() {
 
                 var fabOnClick by remember { mutableStateOf<(() -> Unit)?>(null) }
 
+                val onShowSnackbar: (String) -> Unit = { message ->
+                    scope.launch { snackbarHostState.showSnackbar(message) }
+                }
+
                 Scaffold(
                     snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
                     floatingActionButton = {
-                        if (currentRoute in listOf(Route.Gender.route, Route.Age.route)) {
+                        if (currentRoute in listOf(
+                                Route.Gender.route,
+                                Route.Age.route,
+                                Route.Height.route,
+                                Route.Weight.route,
+                                Route.Goal.route,
+                                Route.NutrientGoal.route,
+                                Route.ActivityLevel.route
+                            )
+                        ) {
                             ExtendedFloatingActionButton(
                                 text = { Text(text = "Next") },
                                 icon = {
@@ -171,47 +190,81 @@ class MainActivity : ComponentActivity() {
                                 onNextClick = {
                                     navController.navigate(Route.Height.route)
                                 },
-                                onShowSnackbar = { message ->
-                                    scope.launch {
-                                        snackbarHostState.showSnackbar(message)
-                                    }
-                                },
+                                onShowSnackbar = onShowSnackbar,
                                 viewModel = ageViewModel
                             )
                         }
                         composable(Route.Height.route) {
+                            val heightViewModel: HeightViewModel = hiltViewModel()
+
+                            LaunchedEffect(Unit) {
+                                fabOnClick = heightViewModel::onNextClick
+                            }
+
                             HeightScreen(
                                 onNextClick = {
                                     navController.navigate(Route.Weight.route)
-                                }
+                                },
+                                onShowSnackbar = onShowSnackbar,
+                                viewModel = heightViewModel
                             )
                         }
                         composable(Route.Weight.route) {
+                            val weightViewModel: WeightViewModel = hiltViewModel()
+
+                            LaunchedEffect(Unit) {
+                                fabOnClick = weightViewModel::onNextClick
+                            }
+
                             WeightScreen(
                                 onNextClick = {
                                     navController.navigate(Route.Goal.route)
-                                }
+                                },
+                                onShowSnackbar = onShowSnackbar,
+                                viewModel = weightViewModel
                             )
                         }
                         composable(Route.Goal.route) {
+                            val goalViewModel: GoalViewModel = hiltViewModel()
+
+                            LaunchedEffect(Unit) {
+                                fabOnClick = goalViewModel::onNextClick
+                            }
+
                             GoalScreen(
                                 onNextClick = {
                                     navController.navigate(Route.NutrientGoal.route)
-                                }
+                                },
+                                viewModel = goalViewModel
                             )
                         }
                         composable(Route.NutrientGoal.route) {
+                            val nutrientGoalViewModel: NutrientGoalViewModel = hiltViewModel()
+
+                            LaunchedEffect(Unit) {
+                                fabOnClick = { nutrientGoalViewModel.onEvent(NutrientGoalEvent.OnNextClick) }
+                            }
+
                             NutrientGoalScreen(
                                 onNextClick = {
                                     navController.navigate(Route.ActivityLevel.route)
-                                }
+                                },
+                                onShowSnackbar = onShowSnackbar,
+                                viewModel = nutrientGoalViewModel
                             )
                         }
                         composable(Route.ActivityLevel.route) {
+                            val activityLevelViewModel: ActivityLevelViewModel = hiltViewModel()
+
+                            LaunchedEffect(Unit) {
+                                fabOnClick = activityLevelViewModel::onNextClick
+                            }
+
                             ActivityLevelScreen(
                                 onNextClick = {
                                     navController.navigate(Route.TrackerOverview.route)
-                                }
+                                },
+                                viewModel = activityLevelViewModel
                             )
                         }
                         composable(
@@ -248,7 +301,8 @@ class MainActivity : ComponentActivity() {
                                 year = year,
                                 onNavigateUp = {
                                     navController.popBackStack()
-                                }
+                                },
+                                onShowSnackbar = onShowSnackbar
                             )
                         }
                         composable(Route.TrackerOverview.route) {
@@ -288,12 +342,7 @@ class MainActivity : ComponentActivity() {
                                 addItemOnClick = {
                                     navController.popBackStack()
                                 },
-                                onItemAdded = { message ->
-                                    scope.launch {
-                                        snackbarHostState.showSnackbar(message)
-                                    }
-                                }
-
+                                onItemAdded = onShowSnackbar
                             )
                         }
                     }

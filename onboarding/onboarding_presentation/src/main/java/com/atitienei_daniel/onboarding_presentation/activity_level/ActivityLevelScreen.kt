@@ -1,5 +1,3 @@
-@file:OptIn(ExperimentalMaterial3Api::class)
-
 package com.atitienei_daniel.onboarding_presentation.activity_level
 
 import androidx.compose.foundation.layout.Arrangement
@@ -9,13 +7,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.ArrowForward
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.ExtendedFloatingActionButton
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -43,64 +35,47 @@ fun ActivityLevelScreen(
         }
     }
 
-    Scaffold(
-        floatingActionButton = {
-            ExtendedFloatingActionButton(
-                text = { Text(text = "Next") },
-                icon = {
-                    Icon(
-                        imageVector = Icons.Rounded.ArrowForward,
-                        contentDescription = null
-                    )
-                },
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(spacing.spaceLarge),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Text(text = "What's your activity level?")
+        Spacer(modifier = Modifier.height(spacing.spaceMedium))
+        Row(
+            horizontalArrangement = Arrangement.spacedBy(spacing.spaceSmall)
+        ) {
+            SelectableButton(
+                text = "Low",
+                isSelected = viewModel.selectedActivityLevel is ActivityLevel.Low,
+                color = MaterialTheme.colorScheme.primaryContainer,
+                selectedTextColor = MaterialTheme.colorScheme.onPrimaryContainer,
                 onClick = {
-                    viewModel.onNextClick()
+                    viewModel.onActivityLevelClick(ActivityLevel.Low)
                 }
             )
-        }
-    ) { innerPadding ->
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(innerPadding),
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Text(text = "What's your activity level?")
-            Spacer(modifier = Modifier.height(spacing.spaceMedium))
-            Row(
-                horizontalArrangement = Arrangement.spacedBy(spacing.spaceSmall)
-            ) {
-                SelectableButton(
-                    text = "Low",
-                    isSelected = viewModel.selectedActivityLevel is ActivityLevel.Low,
-                    color = MaterialTheme.colorScheme.primaryContainer,
-                    selectedTextColor = MaterialTheme.colorScheme.onPrimaryContainer,
-                    onClick = {
-                        viewModel.onActivityLevelClick(ActivityLevel.Low)
-                    }
-                )
 
-                SelectableButton(
-                    text = "Medium",
-                    isSelected = viewModel.selectedActivityLevel is ActivityLevel.Medium,
-                    color = MaterialTheme.colorScheme.primaryContainer,
-                    selectedTextColor = MaterialTheme.colorScheme.onPrimaryContainer,
-                    onClick = {
-                        viewModel.onActivityLevelClick(ActivityLevel.Medium)
-                    }
-                )
+            SelectableButton(
+                text = "Medium",
+                isSelected = viewModel.selectedActivityLevel is ActivityLevel.Medium,
+                color = MaterialTheme.colorScheme.primaryContainer,
+                selectedTextColor = MaterialTheme.colorScheme.onPrimaryContainer,
+                onClick = {
+                    viewModel.onActivityLevelClick(ActivityLevel.Medium)
+                }
+            )
 
-                SelectableButton(
-                    text = "High",
-                    isSelected = viewModel.selectedActivityLevel is ActivityLevel.High,
-                    color = MaterialTheme.colorScheme.primaryContainer,
-                    selectedTextColor = MaterialTheme.colorScheme.onPrimaryContainer,
-                    onClick = {
-                        viewModel.onActivityLevelClick(ActivityLevel.High)
-                    }
-                )
-            }
+            SelectableButton(
+                text = "High",
+                isSelected = viewModel.selectedActivityLevel is ActivityLevel.High,
+                color = MaterialTheme.colorScheme.primaryContainer,
+                selectedTextColor = MaterialTheme.colorScheme.onPrimaryContainer,
+                onClick = {
+                    viewModel.onActivityLevelClick(ActivityLevel.High)
+                }
+            )
         }
     }
 }
