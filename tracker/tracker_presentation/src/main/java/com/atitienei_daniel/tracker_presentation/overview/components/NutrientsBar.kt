@@ -9,6 +9,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Size
+import kotlinx.coroutines.launch
 import com.atitienei_daniel.core_ui.CarbColor
 import com.atitienei_daniel.core_ui.FatColor
 import com.atitienei_daniel.core_ui.ProteinColor
@@ -35,20 +36,13 @@ fun NutrientsBar(
         Animatable(0f)
     }
 
-    LaunchedEffect(key1 = carbs) {
-        carbWidthRatio.animateTo(
-            targetValue = ((carbs * 4f) / calorieGoal)
-        )
-    }
-    LaunchedEffect(key1 = protein) {
-        proteinWidthRatio.animateTo(
-            targetValue = ((protein * 4f) / calorieGoal)
-        )
-    }
-    LaunchedEffect(key1 = fat) {
-        fatWidthRatio.animateTo(
-            targetValue = ((fat * 9f) / calorieGoal)
-        )
+    LaunchedEffect(carbs, protein, fat, calories) {
+        val macroDerivedCalories = carbs * 4f + protein * 4f + fat * 9f
+        val scaleFactor = if (macroDerivedCalories > 0f) calories.toFloat() / macroDerivedCalories else 0f
+
+        launch { carbWidthRatio.animateTo(targetValue = ((carbs * 4f) / calorieGoal) * scaleFactor) }
+        launch { proteinWidthRatio.animateTo(targetValue = ((protein * 4f) / calorieGoal) * scaleFactor) }
+        launch { fatWidthRatio.animateTo(targetValue = ((fat * 9f) / calorieGoal) * scaleFactor) }
     }
 
     Canvas(modifier = modifier) {
