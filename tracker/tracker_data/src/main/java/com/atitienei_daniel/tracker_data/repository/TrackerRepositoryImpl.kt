@@ -6,6 +6,7 @@ import com.atitienei_daniel.tracker_data.mapper.toEntity
 import com.atitienei_daniel.tracker_data.mapper.toTrackableFood
 import com.atitienei_daniel.tracker_data.mapper.toTrackedFood
 import com.atitienei_daniel.tracker_data.remote.OpenFoodApi
+import com.atitienei_daniel.tracker_domain.model.MealType
 import com.atitienei_daniel.tracker_domain.model.TrackableFood
 import com.atitienei_daniel.tracker_domain.model.TrackedFood
 import com.atitienei_daniel.tracker_domain.repository.TrackerRepository
@@ -54,4 +55,15 @@ class TrackerRepositoryImpl @Inject constructor(
             Log.d("entities", entities.toString())
             entities.map { it.toTrackedFood() }
         }
+
+    override suspend fun getRecentFoodsForMealType(mealType: MealType, limit: Int): List<TrackedFood> =
+        dao.getRecentFoodsForMealType(mealType.name, limit).map { it.toTrackedFood() }
+
+    override suspend fun getFoodsForDateAndMealType(date: LocalDate, mealType: MealType): List<TrackedFood> =
+        dao.getFoodsForDateAndMealType(
+            day = date.dayOfMonth,
+            month = date.monthValue,
+            year = date.year,
+            mealType = mealType.name
+        ).map { it.toTrackedFood() }
 }

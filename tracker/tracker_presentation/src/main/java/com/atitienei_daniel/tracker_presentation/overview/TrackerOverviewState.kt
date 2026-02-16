@@ -1,5 +1,6 @@
 package com.atitienei_daniel.tracker_presentation.overview
 
+import com.atitienei_daniel.tracker_domain.model.MealType
 import com.atitienei_daniel.tracker_domain.model.TrackedFood
 import java.time.LocalDate
 
@@ -14,5 +15,9 @@ data class TrackerOverviewState(
     val caloriesGoal: Int = 0,
     val date: LocalDate = LocalDate.now(),
     val trackedFoods: List<TrackedFood> = emptyList(),
-    val meals: List<Meal> = defaultMeals
+    val meals: List<Meal> = defaultMeals,
+    val recentFoods: List<TrackedFood> = emptyList(),
+    val showRecentSheet: Boolean = false,
+    val recentSheetMealType: MealType? = null,
+    val yesterdayMealCounts: Map<MealType, Int> = emptyMap()
 )

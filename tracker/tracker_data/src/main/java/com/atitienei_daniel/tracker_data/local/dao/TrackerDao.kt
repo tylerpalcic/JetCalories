@@ -25,4 +25,23 @@ interface TrackerDao {
         """
     )
     fun getFoodsForDate(day: Int, month: Int, year: Int): Flow<List<TrackedFoodEntity>>
+
+    @Query(
+        """
+            SELECT * FROM trackedfoodentity
+            WHERE type = :mealType
+            GROUP BY name
+            ORDER BY year DESC, month DESC, dayOfMonth DESC
+            LIMIT :limit
+        """
+    )
+    suspend fun getRecentFoodsForMealType(mealType: String, limit: Int = 20): List<TrackedFoodEntity>
+
+    @Query(
+        """
+            SELECT * FROM trackedfoodentity
+            WHERE dayOfMonth = :day AND month = :month AND year = :year AND type = :mealType
+        """
+    )
+    suspend fun getFoodsForDateAndMealType(day: Int, month: Int, year: Int, mealType: String): List<TrackedFoodEntity>
 }

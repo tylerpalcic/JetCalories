@@ -1,5 +1,6 @@
 package com.atitienei_daniel.tracker_domain.repository
 
+import com.atitienei_daniel.tracker_domain.model.MealType
 import com.atitienei_daniel.tracker_domain.model.TrackableFood
 import com.atitienei_daniel.tracker_domain.model.TrackedFood
 import kotlinx.coroutines.flow.Flow
@@ -17,4 +18,8 @@ interface TrackerRepository {
     suspend fun deleteTrackedFood(food: TrackedFood)
 
     fun getFoodsForDate(localDate: LocalDate): Flow<List<TrackedFood>>
+
+    suspend fun getRecentFoodsForMealType(mealType: MealType, limit: Int = 20): List<TrackedFood>
+
+    suspend fun getFoodsForDateAndMealType(date: LocalDate, mealType: MealType): List<TrackedFood>
 }

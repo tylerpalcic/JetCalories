@@ -1,12 +1,13 @@
-@file:OptIn(ExperimentalMaterial3Api::class)
+@file:OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 
 package com.atitienei_daniel.tracker_presentation.overview
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -17,19 +18,16 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Add
+import androidx.compose.material.icons.rounded.ContentCopy
+import androidx.compose.material.icons.rounded.History
 import androidx.compose.material.icons.rounded.Search
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SnackbarHost
-import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -38,6 +36,7 @@ import com.atitienei_daniel.core_ui.LocalSpacing
 import com.atitienei_daniel.tracker_presentation.overview.components.DaySelector
 import com.atitienei_daniel.tracker_presentation.overview.components.ExpandableMeal
 import com.atitienei_daniel.tracker_presentation.overview.components.NutrientsHeader
+import com.atitienei_daniel.tracker_presentation.overview.components.RecentFoodsSheet
 import com.atitienei_daniel.tracker_presentation.overview.components.TrackedFoodItem
 
 @Composable
@@ -97,11 +96,12 @@ fun TrackerOverviewScreen(
                                 viewModel.onEvent(
                                     TrackerOverviewEvent.OnDeleteTrackedFoodClick(trackedFood)
                                 )
-                            }
+                            },
+                            modifier = Modifier.fillMaxWidth()
                         )
                         Spacer(modifier = Modifier.height(spacing.spaceMedium))
                     }
-                    Row(
+                    FlowRow(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.spacedBy(spacing.spaceSmall)
                     ) {
@@ -121,7 +121,7 @@ fun TrackerOverviewScreen(
                         ) {
                             Icon(imageVector = Icons.Rounded.Add, contentDescription = null)
                             Spacer(modifier = Modifier.width(spacing.spaceSmall))
-                            Text(text = "Add ${meal.name}")
+                            Text(text = "Add")
                         }
                         OutlinedButton(
                             onClick = {
@@ -139,12 +139,57 @@ fun TrackerOverviewScreen(
                         ) {
                             Icon(imageVector = Icons.Rounded.Search, contentDescription = null)
                             Spacer(modifier = Modifier.width(spacing.spaceSmall))
-                            Text(text = "Search ${meal.name}")
+                            Text(text = "Search")
+                        }
+                        OutlinedButton(
+                            onClick = {
+                                viewModel.onEvent(
+                                    TrackerOverviewEvent.OnShowRecentFoods(meal.mealType)
+                                )
+                            },
+                            border = BorderStroke(
+                                width = 1.dp,
+                                color = MaterialTheme.colorScheme.primary
+                            ),
+                        ) {
+                            Icon(imageVector = Icons.Rounded.History, contentDescription = null)
+                            Spacer(modifier = Modifier.width(spacing.spaceSmall))
+                            Text(text = "Recent")
+                        }
+                        val yesterdayCount = uiState.yesterdayMealCounts[meal.mealType] ?: 0
+                        OutlinedButton(
+                            onClick = {
+                                viewModel.onEvent(
+                                    TrackerOverviewEvent.OnCopyYesterdayMeal(meal.mealType)
+                                )
+                            },
+                            enabled = yesterdayCount > 0,
+                            border = BorderStroke(
+                                width = 1.dp,
+                                color = if (yesterdayCount > 0) MaterialTheme.colorScheme.primary
+                                    else MaterialTheme.colorScheme.outline
+                            ),
+                        ) {
+                            Icon(imageVector = Icons.Rounded.ContentCopy, contentDescription = null)
+                            Spacer(modifier = Modifier.width(spacing.spaceSmall))
+                            Text(text = "Yesterday")
                         }
                     }
 
                 }
             }
         }
+    }
+
+    if (uiState.showRecentSheet) {
+        RecentFoodsSheet(
+            foods = uiState.recentFoods,
+            onAddFood = { food ->
+                viewModel.onEvent(TrackerOverviewEvent.OnAddRecentFood(food))
+            },
+            onDismiss = {
+                viewModel.onEvent(TrackerOverviewEvent.OnDismissRecentSheet)
+            }
+        )
     }
 }

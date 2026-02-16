@@ -32,4 +32,8 @@ class TrackFood(
             )
         )
     }
+
+    suspend fun execute(food: TrackedFood) {
+        repository.insertTrackedFood(food)
+    }
 }

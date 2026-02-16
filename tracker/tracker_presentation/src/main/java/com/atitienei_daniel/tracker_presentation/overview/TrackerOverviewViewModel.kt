@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.atitienei_daniel.core.domain.data_store.UserDataStore
 import com.atitienei_daniel.core.util.UiEvent
+import com.atitienei_daniel.tracker_domain.model.MealType
 import com.atitienei_daniel.tracker_domain.use_case.TrackerUseCases
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
@@ -89,6 +90,48 @@ class TrackerOverviewViewModel @Inject constructor(
                     )
                 }
             }
+
+            is TrackerOverviewEvent.OnShowRecentFoods -> {
+                viewModelScope.launch {
+                    val recentFoods = trackerUseCases.getRecentFoods.execute(event.mealType)
+                    _uiState.update { state ->
+                        state.copy(
+                            recentFoods = recentFoods,
+                            showRecentSheet = true,
+                            recentSheetMealType = event.mealType
+                        )
+                    }
+                }
+            }
+
+            TrackerOverviewEvent.OnDismissRecentSheet -> {
+                _uiState.update { state ->
+                    state.copy(
+                        showRecentSheet = false,
+                        recentFoods = emptyList(),
+                        recentSheetMealType = null
+                    )
+                }
+            }
+
+            is TrackerOverviewEvent.OnAddRecentFood -> {
+                viewModelScope.launch {
+                    val today = _uiState.value.date
+                    trackerUseCases.trackFood.execute(
+                        event.food.copy(id = null, date = today)
+                    )
+                    refreshFoods()
+                }
+            }
+
+            is TrackerOverviewEvent.OnCopyYesterdayMeal -> {
+                viewModelScope.launch {
+                    val today = _uiState.value.date
+                    val yesterday = today.minusDays(1)
+                    trackerUseCases.copyMealFromDate.execute(yesterday, today, event.mealType)
+                    refreshFoods()
+                }
+            }
         }
     }
 
@@ -104,6 +147,10 @@ class TrackerOverviewViewModel @Inject constructor(
                             userInfo = userInfo
                         )
                         Log.d("nutrientsResult", nutrientsResult.toString())
+
+                        val yesterday = _uiState.value.date.minusDays(1)
+                        val yesterdayCounts = trackerUseCases.copyMealFromDate.getMealCountsForDate(yesterday)
+
                         _uiState.update { state ->
                             state.copy(
                                 totalCarbs = nutrientsResult.totalCarbs,
@@ -115,6 +162,7 @@ class TrackerOverviewViewModel @Inject constructor(
                                 fatGoal = nutrientsResult.fatGoal,
                                 caloriesGoal = nutrientsResult.caloriesGoal,
                                 trackedFoods = foods,
+                                yesterdayMealCounts = yesterdayCounts,
                                 meals = state.meals.map {
                                     val nutrientsForMeal =
                                         nutrientsResult.mealNutrients[it.mealType]

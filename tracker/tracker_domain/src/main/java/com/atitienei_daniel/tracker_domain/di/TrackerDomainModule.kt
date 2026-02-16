@@ -7,6 +7,8 @@ import com.atitienei_daniel.tracker_domain.use_case.DeleteTrackedFood
 import com.atitienei_daniel.tracker_domain.use_case.GetFoodsForDate
 import com.atitienei_daniel.tracker_domain.use_case.SearchFood
 import com.atitienei_daniel.tracker_domain.use_case.TrackFood
+import com.atitienei_daniel.tracker_domain.use_case.CopyMealFromDate
+import com.atitienei_daniel.tracker_domain.use_case.GetRecentFoods
 import com.atitienei_daniel.tracker_domain.use_case.TrackerUseCases
 import dagger.Module
 import dagger.Provides
@@ -29,6 +31,8 @@ object TrackerDomainModule {
             deleteTrackedFood = DeleteTrackedFood(repository),
             trackFood = TrackFood(repository),
             getFoodsForDate = GetFoodsForDate(repository),
-            calculateMealNutrients = CalculateMealNutrients()
+            calculateMealNutrients = CalculateMealNutrients(),
+            getRecentFoods = GetRecentFoods(repository),
+            copyMealFromDate = CopyMealFromDate(repository)
         )
 }
