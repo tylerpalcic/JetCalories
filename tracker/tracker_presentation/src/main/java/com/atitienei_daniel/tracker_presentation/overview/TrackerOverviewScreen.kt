@@ -33,6 +33,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.atitienei_daniel.core_ui.LocalSpacing
+import com.atitienei_daniel.tracker_presentation.overview.components.BurnedCaloriesDialog
 import com.atitienei_daniel.tracker_presentation.overview.components.DaySelector
 import com.atitienei_daniel.tracker_presentation.overview.components.ExpandableMeal
 import com.atitienei_daniel.tracker_presentation.overview.components.NutrientsHeader
@@ -55,7 +56,12 @@ fun TrackerOverviewScreen(
         verticalArrangement = Arrangement.spacedBy(spacing.spaceMedium)
     ) {
         item {
-            NutrientsHeader(state = uiState)
+            NutrientsHeader(
+                state = uiState,
+                onBurnedCaloriesClick = {
+                    viewModel.onEvent(TrackerOverviewEvent.OnBurnedCaloriesClick)
+                }
+            )
         }
         item {
             DaySelector(
@@ -189,6 +195,18 @@ fun TrackerOverviewScreen(
             },
             onDismiss = {
                 viewModel.onEvent(TrackerOverviewEvent.OnDismissRecentSheet)
+            }
+        )
+    }
+
+    if (uiState.showBurnedCaloriesDialog) {
+        BurnedCaloriesDialog(
+            currentValue = uiState.burnedCalories,
+            onConfirm = { value ->
+                viewModel.onEvent(TrackerOverviewEvent.OnBurnedCaloriesEnter(value))
+            },
+            onDismiss = {
+                viewModel.onEvent(TrackerOverviewEvent.OnDismissBurnedCaloriesDialog)
             }
         )
     }

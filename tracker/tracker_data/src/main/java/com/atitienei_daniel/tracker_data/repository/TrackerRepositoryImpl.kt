@@ -3,6 +3,7 @@ package com.atitienei_daniel.tracker_data.repository
 import android.util.Log
 import com.atitienei_daniel.tracker_data.local.dao.TrackerDao
 import com.atitienei_daniel.tracker_data.mapper.toEntity
+import com.atitienei_daniel.tracker_domain.model.BurnedCalories
 import com.atitienei_daniel.tracker_data.mapper.toTrackableFood
 import com.atitienei_daniel.tracker_data.mapper.toTrackedFood
 import com.atitienei_daniel.tracker_data.remote.OpenFoodApi
@@ -66,4 +67,22 @@ class TrackerRepositoryImpl @Inject constructor(
             year = date.year,
             mealType = mealType.name
         ).map { it.toTrackedFood() }
+
+    override suspend fun upsertBurnedCalories(burnedCalories: BurnedCalories) {
+        val existing = dao.getBurnedCaloriesForDate(
+            day = burnedCalories.date.dayOfMonth,
+            month = burnedCalories.date.monthValue,
+            year = burnedCalories.date.year
+        )
+        dao.upsertBurnedCalories(
+            burnedCalories.toEntity().copy(id = existing?.id)
+        )
+    }
+
+    override suspend fun getBurnedCaloriesForDate(date: LocalDate): Int =
+        dao.getBurnedCaloriesForDate(
+            day = date.dayOfMonth,
+            month = date.monthValue,
+            year = date.year
+        )?.calories ?: 0
 }

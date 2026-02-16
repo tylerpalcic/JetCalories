@@ -11,7 +11,7 @@ import kotlin.math.roundToInt
 class CalculateMealNutrients(
 
 ) {
-    fun execute(trackedFoods: List<TrackedFood>, userInfo: UserInfo): Result {
+    fun execute(trackedFoods: List<TrackedFood>, userInfo: UserInfo, burnedCalories: Int = 0): Result {
         val allNutrients = trackedFoods
             .groupBy { it.mealType }
             .mapValues { entry ->
@@ -31,16 +31,19 @@ class CalculateMealNutrients(
         val totalFat = allNutrients.values.sumOf { it.fat }
         val totalCalories = allNutrients.values.sumOf { it.calories }
 
-        val calorieGoal = dailyCalorieRequirement(userInfo)
-        val carbsGoal = (calorieGoal * userInfo.carbRatio / 4f).roundToInt()
-        val proteinGoal = (calorieGoal * userInfo.proteinRatio / 4f).roundToInt()
-        val fatGoal = (calorieGoal * userInfo.fatRatio / 9f).roundToInt()
+        val baseCalorieGoal = dailyCalorieRequirement(userInfo)
+        val effectiveCalorieGoal = baseCalorieGoal + burnedCalories
+        val carbsGoal = (effectiveCalorieGoal * userInfo.carbRatio / 4f).roundToInt()
+        val proteinGoal = (effectiveCalorieGoal * userInfo.proteinRatio / 4f).roundToInt()
+        val fatGoal = (effectiveCalorieGoal * userInfo.fatRatio / 9f).roundToInt()
 
         return Result(
             carbsGoal = carbsGoal,
             proteinGoal = proteinGoal,
             fatGoal = fatGoal,
-            caloriesGoal = calorieGoal,
+            caloriesGoal = effectiveCalorieGoal,
+            baseCaloriesGoal = baseCalorieGoal,
+            burnedCalories = burnedCalories,
             totalCarbs = totalCarbs,
             totalProtein = totalProtein,
             totalFat = totalFat,
@@ -89,6 +92,8 @@ class CalculateMealNutrients(
         val proteinGoal: Int,
         val fatGoal: Int,
         val caloriesGoal: Int,
+        val baseCaloriesGoal: Int,
+        val burnedCalories: Int,
         val totalCarbs: Int,
         val totalProtein: Int,
         val totalFat: Int,

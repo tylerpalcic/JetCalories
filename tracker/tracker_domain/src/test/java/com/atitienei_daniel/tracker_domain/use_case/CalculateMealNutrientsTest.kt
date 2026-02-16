@@ -138,4 +138,67 @@ class CalculateMealNutrientsTest {
         val lunchNutrients = result.mealNutrients[MealType.Lunch]!!
         assertThat(lunchNutrients.calories).isEqualTo(365)
     }
+
+    @Test
+    fun `burned calories increase effective calorie goal`() {
+        val userInfo = UserInfo(
+            gender = Gender.Male,
+            age = 30,
+            weight = 180f,
+            height = 70,
+            activityLevel = ActivityLevel.Medium,
+            goalType = GoalType.LoseWeight,
+            carbRatio = 0.4f,
+            proteinRatio = 0.3f,
+            fatRatio = 0.3f
+        )
+        val burned = 300
+        val result = calculateMealNutrients.execute(emptyList(), userInfo, burned)
+        // Base goal = 1702, effective = 1702 + 300 = 2002
+        assertThat(result.baseCaloriesGoal).isEqualTo(1702)
+        assertThat(result.caloriesGoal).isEqualTo(2002)
+        assertThat(result.burnedCalories).isEqualTo(300)
+    }
+
+    @Test
+    fun `zero burned calories does not change goal`() {
+        val userInfo = UserInfo(
+            gender = Gender.Male,
+            age = 30,
+            weight = 180f,
+            height = 70,
+            activityLevel = ActivityLevel.Medium,
+            goalType = GoalType.LoseWeight,
+            carbRatio = 0.4f,
+            proteinRatio = 0.3f,
+            fatRatio = 0.3f
+        )
+        val result = calculateMealNutrients.execute(emptyList(), userInfo, 0)
+        assertThat(result.baseCaloriesGoal).isEqualTo(1702)
+        assertThat(result.caloriesGoal).isEqualTo(1702)
+        assertThat(result.burnedCalories).isEqualTo(0)
+    }
+
+    @Test
+    fun `burned calories adjust macro goals proportionally`() {
+        val userInfo = UserInfo(
+            gender = Gender.Male,
+            age = 30,
+            weight = 180f,
+            height = 70,
+            activityLevel = ActivityLevel.Medium,
+            goalType = GoalType.LoseWeight,
+            carbRatio = 0.4f,
+            proteinRatio = 0.3f,
+            fatRatio = 0.3f
+        )
+        val result = calculateMealNutrients.execute(emptyList(), userInfo, 300)
+        // Effective goal = 2002
+        // 2002 * 0.4 / 4 = 200.2 -> 200g carbs
+        // 2002 * 0.3 / 4 = 150.15 -> 150g protein
+        // 2002 * 0.3 / 9 = 66.73 -> 67g fat
+        assertThat(result.carbsGoal).isEqualTo(200)
+        assertThat(result.proteinGoal).isEqualTo(150)
+        assertThat(result.fatGoal).isEqualTo(67)
+    }
 }

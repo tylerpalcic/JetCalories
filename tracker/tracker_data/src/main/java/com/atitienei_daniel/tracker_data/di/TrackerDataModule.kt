@@ -48,7 +48,8 @@ object TrackerDataModule {
             context,
             TrackerDatabase::class.java,
             "tracker_db"
-        ).build()
+        ).fallbackToDestructiveMigration()
+            .build()
 
     @Provides
     @Singleton

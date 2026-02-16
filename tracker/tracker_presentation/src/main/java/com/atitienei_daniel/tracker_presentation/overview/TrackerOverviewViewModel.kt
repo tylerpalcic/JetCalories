@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.atitienei_daniel.core.domain.data_store.UserDataStore
 import com.atitienei_daniel.core.util.UiEvent
+import com.atitienei_daniel.tracker_domain.model.BurnedCalories
 import com.atitienei_daniel.tracker_domain.model.MealType
 import com.atitienei_daniel.tracker_domain.use_case.TrackerUseCases
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -132,19 +133,49 @@ class TrackerOverviewViewModel @Inject constructor(
                     refreshFoods()
                 }
             }
+
+            TrackerOverviewEvent.OnBurnedCaloriesClick -> {
+                _uiState.update { state ->
+                    state.copy(showBurnedCaloriesDialog = true)
+                }
+            }
+
+            is TrackerOverviewEvent.OnBurnedCaloriesEnter -> {
+                val calories = event.calories.toIntOrNull() ?: 0
+                if (calories >= 0) {
+                    viewModelScope.launch {
+                        trackerUseCases.upsertBurnedCalories.execute(
+                            BurnedCalories(
+                                calories = calories,
+                                date = _uiState.value.date
+                            )
+                        )
+                        _uiState.update { it.copy(showBurnedCaloriesDialog = false) }
+                        refreshFoods()
+                    }
+                }
+            }
+
+            TrackerOverviewEvent.OnDismissBurnedCaloriesDialog -> {
+                _uiState.update { state ->
+                    state.copy(showBurnedCaloriesDialog = false)
+                }
+            }
         }
     }
 
     private fun refreshFoods() {
         getsFoodForDateJob?.cancel()
         getsFoodForDateJob = viewModelScope.launch {
+            val burned = trackerUseCases.getBurnedCaloriesForDate.execute(_uiState.value.date)
             trackerUseCases.getFoodsForDate
                 .execute(_uiState.value.date)
                 .onEach { foods ->
                     userInfo.value?.let { userInfo ->
                         val nutrientsResult = trackerUseCases.calculateMealNutrients.execute(
                             trackedFoods = foods,
-                            userInfo = userInfo
+                            userInfo = userInfo,
+                            burnedCalories = burned
                         )
                         Log.d("nutrientsResult", nutrientsResult.toString())
 
@@ -161,6 +192,8 @@ class TrackerOverviewViewModel @Inject constructor(
                                 proteinGoal = nutrientsResult.proteinGoal,
                                 fatGoal = nutrientsResult.fatGoal,
                                 caloriesGoal = nutrientsResult.caloriesGoal,
+                                burnedCalories = nutrientsResult.burnedCalories,
+                                baseCaloriesGoal = nutrientsResult.baseCaloriesGoal,
                                 trackedFoods = foods,
                                 yesterdayMealCounts = yesterdayCounts,
                                 meals = state.meals.map {

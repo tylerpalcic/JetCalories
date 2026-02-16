@@ -12,4 +12,7 @@ sealed interface TrackerOverviewEvent {
     object OnDismissRecentSheet: TrackerOverviewEvent
     data class OnAddRecentFood(val food: TrackedFood): TrackerOverviewEvent
     data class OnCopyYesterdayMeal(val mealType: MealType): TrackerOverviewEvent
+    object OnBurnedCaloriesClick: TrackerOverviewEvent
+    data class OnBurnedCaloriesEnter(val calories: String): TrackerOverviewEvent
+    object OnDismissBurnedCaloriesDialog: TrackerOverviewEvent
 }

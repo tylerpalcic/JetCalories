@@ -5,6 +5,7 @@ import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import com.atitienei_daniel.tracker_data.local.entity.BurnedCaloriesEntity
 import com.atitienei_daniel.tracker_data.local.entity.TrackedFoodEntity
 import kotlinx.coroutines.flow.Flow
 
@@ -44,4 +45,15 @@ interface TrackerDao {
         """
     )
     suspend fun getFoodsForDateAndMealType(day: Int, month: Int, year: Int, mealType: String): List<TrackedFoodEntity>
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun upsertBurnedCalories(entity: BurnedCaloriesEntity)
+
+    @Query(
+        """
+            SELECT * FROM burnedcaloriesentity
+            WHERE dayOfMonth = :day AND month = :month AND year = :year
+        """
+    )
+    suspend fun getBurnedCaloriesForDate(day: Int, month: Int, year: Int): BurnedCaloriesEntity?
 }

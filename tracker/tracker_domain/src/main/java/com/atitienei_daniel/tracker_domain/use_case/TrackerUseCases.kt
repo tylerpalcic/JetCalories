@@ -7,5 +7,7 @@ data class TrackerUseCases(
     val getFoodsForDate: GetFoodsForDate,
     val calculateMealNutrients: CalculateMealNutrients,
     val getRecentFoods: GetRecentFoods,
-    val copyMealFromDate: CopyMealFromDate
+    val copyMealFromDate: CopyMealFromDate,
+    val upsertBurnedCalories: UpsertBurnedCalories,
+    val getBurnedCaloriesForDate: GetBurnedCaloriesForDate
 )

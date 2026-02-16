@@ -2,6 +2,7 @@ package com.atitienei_daniel.tracker_presentation.overview.components
 
 import androidx.compose.animation.core.animateIntAsState
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -10,7 +11,11 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Add
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -30,7 +35,8 @@ import com.atitienei_daniel.tracker_presentation.overview.TrackerOverviewState
 @Composable
 fun NutrientsHeader(
     state: TrackerOverviewState,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onBurnedCaloriesClick: () -> Unit = {}
 ) {
     val spacing = LocalSpacing.current
     val animatedCalorieCount by animateIntAsState(targetValue = state.totalCalories)
@@ -71,6 +77,37 @@ fun NutrientsHeader(
                     amountColor = MaterialTheme.colorScheme.onPrimary,
                     unitColor = MaterialTheme.colorScheme.onPrimary,
                     amountTextSize = 40.sp,
+                )
+            }
+        }
+
+        Spacer(modifier = Modifier.height(spacing.spaceSmall))
+
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .clip(RoundedCornerShape(8.dp))
+                .clickable { onBurnedCaloriesClick() }
+                .padding(vertical = spacing.spaceExtraSmall),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                text = "\uD83D\uDD25",
+                fontSize = 16.sp
+            )
+            Spacer(modifier = Modifier.width(spacing.spaceExtraSmall))
+            Text(
+                text = "${state.burnedCalories} burned",
+                color = MaterialTheme.colorScheme.onPrimary,
+                style = MaterialTheme.typography.bodyMedium
+            )
+            if (state.burnedCalories == 0) {
+                Spacer(modifier = Modifier.width(spacing.spaceExtraSmall))
+                Icon(
+                    imageVector = Icons.Rounded.Add,
+                    contentDescription = "Add burned calories",
+                    tint = MaterialTheme.colorScheme.onPrimary,
+                    modifier = Modifier.size(18.dp)
                 )
             }
         }
