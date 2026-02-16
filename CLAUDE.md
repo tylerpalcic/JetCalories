@@ -1,7 +1,7 @@
-# JetCalories — Project Rules
+# FitTrack — Project Rules
 
 ## App Summary
-JetCalories is a native Android calorie and macronutrient tracker built with Kotlin and Jetpack Compose. It follows Clean Architecture with a multi-module structure.
+FitTrack is a native Android calorie and macronutrient tracker built with Kotlin and Jetpack Compose. It follows Clean Architecture with a multi-module structure.
 
 ### What It Does
 - **Onboarding** (8 screens): Collects user profile — gender, age, height, weight, fitness goal (lose/keep/gain weight), macronutrient ratio targets (carbs/protein/fat summing to 100%), and activity level (low/medium/high). Persisted via DataStore Preferences.
@@ -28,7 +28,7 @@ JetCalories is a native Android calorie and macronutrient tracker built with Kot
 - Kotlin, Jetpack Compose (Material 3), Dagger Hilt, Room, Retrofit + Moshi, Coil, DataStore Preferences, Coroutines/Flow, Navigation Compose, Google Play In-App Updates
 - Build uses Kotlin DSL with `buildSrc` dependency objects
 - JVM target 17, compileSdk 33, minSdk 29
-- Package: `com.atitienei_daniel.jetcalories`
+- Package: `com.tylerpalcic.fittrack`
 
 ## Project-Specific Conventions
 
@@ -91,5 +91,5 @@ Rules that reduce code verbosity, boilerplate, and context length when generatin
 ### AI/Prompt Optimization (Meta Rules)
 - Use tables and bullet fragments instead of full sentences where possible.
 - Reference patterns briefly (e.g., “Follow official Compose Navigation guidelines”) — avoid re-explaining standards.
-- When prompting AI, prefix with “Follow JetCalories rules:” and include **only relevant sections** of this document.
+- When prompting AI, prefix with “Follow FitTrack rules:” and include **only relevant sections** of this document.
 - Omit obvious defaults (standard coroutine usage, Material 3 theming, etc.) unless overridden.

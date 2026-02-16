@@ -1,0 +1,52 @@
+package com.tylerpalcic.onboarding_presentation.goal
+
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.tylerpalcic.core.domain.data_store.UserDataStore
+import com.tylerpalcic.core.domain.model.GoalType
+import com.tylerpalcic.core.util.UiEvent
+import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.receiveAsFlow
+import kotlinx.coroutines.launch
+import javax.inject.Inject
+
+@HiltViewModel
+class GoalViewModel @Inject constructor(
+    private val userDataStore: UserDataStore
+) : ViewModel() {
+
+    var selectedGoalType by mutableStateOf<GoalType>(GoalType.KeepWeight)
+        private set
+
+    private val _uiEvent = Channel<UiEvent>()
+    val uiEvent = _uiEvent.receiveAsFlow()
+
+    private val _showCalorieInput: MutableState<Boolean> = mutableStateOf(false)
+//    val showCalorieInput: MutableState<Boolean>
+//        get() = _showCalorieInput
+//
+//    var calorieAllowance: MutableState<Int> = mutableStateOf(1700)
+
+    fun onActivityLevelClick(type: GoalType) {
+        selectedGoalType = type
+    }
+
+    fun onNextClick() {
+        viewModelScope.launch {
+            userDataStore.saveGoalType(type = selectedGoalType)
+            _uiEvent.send(UiEvent.Navigate)
+        }
+    }
+//    fun onSkipClick() {
+//        viewModelScope.launch {
+//            userDataStore.saveGoalType(type = selectedGoalType)
+//            _uiEvent.send(UiEvent.Navigate)
+//        }
+//    }
+}

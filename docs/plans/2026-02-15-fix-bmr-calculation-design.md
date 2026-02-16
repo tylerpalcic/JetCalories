@@ -10,7 +10,7 @@
 
 ## Solution
 
-### File: `tracker/tracker_domain/src/main/java/com/atitienei_daniel/tracker_domain/use_case/CalculateMealNutrients.kt`
+### File: `tracker/tracker_domain/src/main/java/com/tylerpalcic/tracker_domain/use_case/CalculateMealNutrients.kt`
 
 ### `bmr()` — Switch to Mifflin-St Jeor (imperial units)
 

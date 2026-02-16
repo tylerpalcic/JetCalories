@@ -1,4 +1,4 @@
-# JetCalories
+# FitTrack
 
 This is a **Calorie Tracker app** built with Jetpack Compose.
 

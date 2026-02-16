@@ -12,7 +12,7 @@ dependencyResolutionManagement {
         mavenCentral()
     }
 }
-rootProject.name = "JetCalories"
+rootProject.name = "FitTrack"
 include ':app'
 include ':core'
 include ':onboarding'

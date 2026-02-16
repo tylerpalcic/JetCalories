@@ -13,7 +13,7 @@
 ### Task 1: Fix Onboarding FAB — Wire FAB to ViewModel via Shared Callback
 
 **Files:**
-- Modify: `app/src/main/java/com/atitienei_daniel/jetcalories/MainActivity.kt`
+- Modify: `app/src/main/java/com/tylerpalcic/fittrack/MainActivity.kt`
 
 **Context:** The FAB in MainActivity navigates directly via `navController.navigate()`, bypassing each screen's ViewModel. The ViewModel saves data to DataStore and validates input. We need the FAB to trigger the ViewModel's `onNextClick()` instead.
 
@@ -104,7 +104,7 @@ Delete lines 202-204 (the commented-out `onSkipClick` block) — dead code.
 **Step 5: Commit**
 
 ```bash
-git add app/src/main/java/com/atitienei_daniel/jetcalories/MainActivity.kt
+git add app/src/main/java/com/tylerpalcic/fittrack/MainActivity.kt
 git commit -m "Fix onboarding FAB to save data via ViewModel before navigating"
 ```
 
@@ -113,49 +113,49 @@ git commit -m "Fix onboarding FAB to save data via ViewModel before navigating"
 ### Task 2: Move AddFoodItem Files to Correct Package
 
 **Files:**
-- Move: `tracker/tracker_presentation/src/main/java/com/atitienei_daniel/tracker_presentation/overview/components/AddFoodItemScreen.kt` → `tracker/tracker_presentation/src/main/java/com/atitienei_daniel/tracker_presentation/add_food_item/AddFoodItemScreen.kt`
-- Move: `tracker/tracker_presentation/src/main/java/com/atitienei_daniel/tracker_presentation/overview/components/AddFoodItemViewModel.kt` → `tracker/tracker_presentation/src/main/java/com/atitienei_daniel/tracker_presentation/add_food_item/AddFoodItemViewModel.kt`
-- Modify: `app/src/main/java/com/atitienei_daniel/jetcalories/MainActivity.kt` (update import)
+- Move: `tracker/tracker_presentation/src/main/java/com/tylerpalcic/tracker_presentation/overview/components/AddFoodItemScreen.kt` → `tracker/tracker_presentation/src/main/java/com/tylerpalcic/tracker_presentation/add_food_item/AddFoodItemScreen.kt`
+- Move: `tracker/tracker_presentation/src/main/java/com/tylerpalcic/tracker_presentation/overview/components/AddFoodItemViewModel.kt` → `tracker/tracker_presentation/src/main/java/com/tylerpalcic/tracker_presentation/add_food_item/AddFoodItemViewModel.kt`
+- Modify: `app/src/main/java/com/tylerpalcic/fittrack/MainActivity.kt` (update import)
 
 **Step 1: Create the target directory**
 
 ```bash
-mkdir -p tracker/tracker_presentation/src/main/java/com/atitienei_daniel/tracker_presentation/add_food_item
+mkdir -p tracker/tracker_presentation/src/main/java/com/tylerpalcic/tracker_presentation/add_food_item
 ```
 
 **Step 2: Move files and update package declarations**
 
 ```bash
-git mv tracker/tracker_presentation/src/main/java/com/atitienei_daniel/tracker_presentation/overview/components/AddFoodItemScreen.kt tracker/tracker_presentation/src/main/java/com/atitienei_daniel/tracker_presentation/add_food_item/AddFoodItemScreen.kt
-git mv tracker/tracker_presentation/src/main/java/com/atitienei_daniel/tracker_presentation/overview/components/AddFoodItemViewModel.kt tracker/tracker_presentation/src/main/java/com/atitienei_daniel/tracker_presentation/add_food_item/AddFoodItemViewModel.kt
+git mv tracker/tracker_presentation/src/main/java/com/tylerpalcic/tracker_presentation/overview/components/AddFoodItemScreen.kt tracker/tracker_presentation/src/main/java/com/tylerpalcic/tracker_presentation/add_food_item/AddFoodItemScreen.kt
+git mv tracker/tracker_presentation/src/main/java/com/tylerpalcic/tracker_presentation/overview/components/AddFoodItemViewModel.kt tracker/tracker_presentation/src/main/java/com/tylerpalcic/tracker_presentation/add_food_item/AddFoodItemViewModel.kt
 ```
 
 **Step 3: Update package declaration in both files**
 
 In both files, change:
 ```kotlin
-package com.atitienei_daniel.tracker_presentation.overview.components
+package com.tylerpalcic.tracker_presentation.overview.components
 ```
 to:
 ```kotlin
-package com.atitienei_daniel.tracker_presentation.add_food_item
+package com.tylerpalcic.tracker_presentation.add_food_item
 ```
 
 **Step 4: Update the import in MainActivity.kt**
 
 Change:
 ```kotlin
-import com.atitienei_daniel.tracker_presentation.overview.components.AddFoodItemScreen
+import com.tylerpalcic.tracker_presentation.overview.components.AddFoodItemScreen
 ```
 to:
 ```kotlin
-import com.atitienei_daniel.tracker_presentation.add_food_item.AddFoodItemScreen
+import com.tylerpalcic.tracker_presentation.add_food_item.AddFoodItemScreen
 ```
 
 **Step 5: Commit**
 
 ```bash
-git add -A tracker/tracker_presentation/src/main/java/com/atitienei_daniel/tracker_presentation/add_food_item/ tracker/tracker_presentation/src/main/java/com/atitienei_daniel/tracker_presentation/overview/components/ app/src/main/java/com/atitienei_daniel/jetcalories/MainActivity.kt
+git add -A tracker/tracker_presentation/src/main/java/com/tylerpalcic/tracker_presentation/add_food_item/ tracker/tracker_presentation/src/main/java/com/tylerpalcic/tracker_presentation/overview/components/ app/src/main/java/com/tylerpalcic/fittrack/MainActivity.kt
 git commit -m "Move AddFoodItem files to dedicated add_food_item package"
 ```
 
@@ -164,9 +164,9 @@ git commit -m "Move AddFoodItem files to dedicated add_food_item package"
 ### Task 3: Add Date Route Argument to AddFoodItem
 
 **Files:**
-- Modify: `app/src/main/java/com/atitienei_daniel/jetcalories/navigation/Route.kt`
-- Modify: `tracker/tracker_presentation/src/main/java/com/atitienei_daniel/tracker_presentation/overview/TrackerOverviewScreen.kt`
-- Modify: `app/src/main/java/com/atitienei_daniel/jetcalories/MainActivity.kt`
+- Modify: `app/src/main/java/com/tylerpalcic/fittrack/navigation/Route.kt`
+- Modify: `tracker/tracker_presentation/src/main/java/com/tylerpalcic/tracker_presentation/overview/TrackerOverviewScreen.kt`
+- Modify: `app/src/main/java/com/tylerpalcic/fittrack/MainActivity.kt`
 
 **Context:** The Search route already passes `dayOfMonth/month/year` as three ints. We'll follow the same pattern for AddFoodItem for consistency.
 
@@ -266,7 +266,7 @@ composable(
 **Step 4: Commit**
 
 ```bash
-git add app/src/main/java/com/atitienei_daniel/jetcalories/navigation/Route.kt app/src/main/java/com/atitienei_daniel/jetcalories/MainActivity.kt tracker/tracker_presentation/src/main/java/com/atitienei_daniel/tracker_presentation/overview/TrackerOverviewScreen.kt
+git add app/src/main/java/com/tylerpalcic/fittrack/navigation/Route.kt app/src/main/java/com/tylerpalcic/fittrack/MainActivity.kt tracker/tracker_presentation/src/main/java/com/tylerpalcic/tracker_presentation/overview/TrackerOverviewScreen.kt
 git commit -m "Add date parameters to AddFoodItem route for correct date tracking"
 ```
 
@@ -275,7 +275,7 @@ git commit -m "Add date parameters to AddFoodItem route for correct date trackin
 ### Task 4: Fix AddFoodItemViewModel — Read Route Args, Add Validation, Fix Amount Bug
 
 **Files:**
-- Modify: `tracker/tracker_presentation/src/main/java/com/atitienei_daniel/tracker_presentation/add_food_item/AddFoodItemViewModel.kt`
+- Modify: `tracker/tracker_presentation/src/main/java/com/tylerpalcic/tracker_presentation/add_food_item/AddFoodItemViewModel.kt`
 
 **Context:** Three bugs to fix:
 1. `mealName` from route is ignored — always defaults to Breakfast
@@ -287,15 +287,15 @@ git commit -m "Add date parameters to AddFoodItem route for correct date trackin
 Replace the entire contents of `AddFoodItemViewModel.kt`:
 
 ```kotlin
-package com.atitienei_daniel.tracker_presentation.add_food_item
+package com.tylerpalcic.tracker_presentation.add_food_item
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.atitienei_daniel.core.util.UiEvent
-import com.atitienei_daniel.tracker_domain.model.MealType
-import com.atitienei_daniel.tracker_domain.model.TrackableFood
-import com.atitienei_daniel.tracker_domain.use_case.TrackerUseCases
+import com.tylerpalcic.core.util.UiEvent
+import com.tylerpalcic.tracker_domain.model.MealType
+import com.tylerpalcic.tracker_domain.model.TrackableFood
+import com.tylerpalcic.tracker_domain.use_case.TrackerUseCases
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.receiveAsFlow
@@ -387,7 +387,7 @@ Key changes:
 **Step 2: Commit**
 
 ```bash
-git add tracker/tracker_presentation/src/main/java/com/atitienei_daniel/tracker_presentation/add_food_item/AddFoodItemViewModel.kt
+git add tracker/tracker_presentation/src/main/java/com/tylerpalcic/tracker_presentation/add_food_item/AddFoodItemViewModel.kt
 git commit -m "Fix AddFoodItemViewModel: read route args, add validation, fix amount bug"
 ```
 
@@ -396,14 +396,14 @@ git commit -m "Fix AddFoodItemViewModel: read route args, add validation, fix am
 ### Task 5: Fix AddFoodItemScreen — Use ViewModel State, LocalSpacing, Handle NavigateUp
 
 **Files:**
-- Modify: `tracker/tracker_presentation/src/main/java/com/atitienei_daniel/tracker_presentation/add_food_item/AddFoodItemScreen.kt`
+- Modify: `tracker/tracker_presentation/src/main/java/com/tylerpalcic/tracker_presentation/add_food_item/AddFoodItemScreen.kt`
 
 **Step 1: Rewrite the screen to use ViewModel's initialMealType, LocalSpacing, and handle NavigateUp**
 
 Replace the entire contents of `AddFoodItemScreen.kt`:
 
 ```kotlin
-package com.atitienei_daniel.tracker_presentation.add_food_item
+package com.tylerpalcic.tracker_presentation.add_food_item
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -428,9 +428,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.atitienei_daniel.core.util.UiEvent
-import com.atitienei_daniel.core_ui.LocalSpacing
-import com.atitienei_daniel.tracker_domain.model.MealType
+import com.tylerpalcic.core.util.UiEvent
+import com.tylerpalcic.core_ui.LocalSpacing
+import com.tylerpalcic.tracker_domain.model.MealType
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -573,7 +573,7 @@ Key changes:
 
 Verify `UiEvent` sealed interface includes `NavigateUp`. If not, it needs to be added.
 
-Check: `core/src/main/java/com/atitienei_daniel/core/util/UiEvent.kt`
+Check: `core/src/main/java/com/tylerpalcic/core/util/UiEvent.kt`
 
 If `NavigateUp` is missing, add:
 ```kotlin
@@ -583,7 +583,7 @@ object NavigateUp : UiEvent
 **Step 3: Commit**
 
 ```bash
-git add tracker/tracker_presentation/src/main/java/com/atitienei_daniel/tracker_presentation/add_food_item/AddFoodItemScreen.kt core/src/main/java/com/atitienei_daniel/core/util/UiEvent.kt
+git add tracker/tracker_presentation/src/main/java/com/tylerpalcic/tracker_presentation/add_food_item/AddFoodItemScreen.kt core/src/main/java/com/tylerpalcic/core/util/UiEvent.kt
 git commit -m "Fix AddFoodItemScreen: use LocalSpacing, initial meal type, validation UX"
 ```
 

@@ -13,21 +13,21 @@
 ### Task 1: Write unit tests for BMR and daily calorie requirement
 
 **Files:**
-- Create: `tracker/tracker_domain/src/test/java/com/atitienei_daniel/tracker_domain/use_case/CalculateMealNutrientsTest.kt`
+- Create: `tracker/tracker_domain/src/test/java/com/tylerpalcic/tracker_domain/use_case/CalculateMealNutrientsTest.kt`
 
 **Step 1: Create test file with BMR and TDEE tests**
 
 The tests call the public `execute()` method and assert on `caloriesGoal` in the result, which exercises both `bmr()` and `dailyCalorieRequirement()` internally.
 
 ```kotlin
-package com.atitienei_daniel.tracker_domain.use_case
+package com.tylerpalcic.tracker_domain.use_case
 
-import com.atitienei_daniel.core.domain.model.ActivityLevel
-import com.atitienei_daniel.core.domain.model.Gender
-import com.atitienei_daniel.core.domain.model.GoalType
-import com.atitienei_daniel.core.domain.model.UserInfo
-import com.atitienei_daniel.tracker_domain.model.MealType
-import com.atitienei_daniel.tracker_domain.model.TrackedFood
+import com.tylerpalcic.core.domain.model.ActivityLevel
+import com.tylerpalcic.core.domain.model.Gender
+import com.tylerpalcic.core.domain.model.GoalType
+import com.tylerpalcic.core.domain.model.UserInfo
+import com.tylerpalcic.tracker_domain.model.MealType
+import com.tylerpalcic.tracker_domain.model.TrackedFood
 import com.google.common.truth.Truth.assertThat
 import org.junit.Before
 import org.junit.Test
@@ -171,7 +171,7 @@ Expected: 3 of 5 tests FAIL (the calorie goal tests fail because the old formula
 **Step 3: Commit the failing tests**
 
 ```bash
-git add tracker/tracker_domain/src/test/java/com/atitienei_daniel/tracker_domain/use_case/CalculateMealNutrientsTest.kt
+git add tracker/tracker_domain/src/test/java/com/tylerpalcic/tracker_domain/use_case/CalculateMealNutrientsTest.kt
 git commit -m "Add tests for CalculateMealNutrients calorie goal calculation"
 ```
 
@@ -180,7 +180,7 @@ git commit -m "Add tests for CalculateMealNutrients calorie goal calculation"
 ### Task 2: Fix `bmr()` and `dailyCalorieRequirement()` in CalculateMealNutrients
 
 **Files:**
-- Modify: `tracker/tracker_domain/src/main/java/com/atitienei_daniel/tracker_domain/use_case/CalculateMealNutrients.kt` — `bmr()` function (lines 53-63) and `dailyCalorieRequirement()` function (lines 65-75)
+- Modify: `tracker/tracker_domain/src/main/java/com/tylerpalcic/tracker_domain/use_case/CalculateMealNutrients.kt` — `bmr()` function (lines 53-63) and `dailyCalorieRequirement()` function (lines 65-75)
 
 **Step 1: Replace `bmr()` with Mifflin-St Jeor (imperial)**
 
@@ -229,7 +229,7 @@ Expected: All 5 tests PASS.
 **Step 4: Commit**
 
 ```bash
-git add tracker/tracker_domain/src/main/java/com/atitienei_daniel/tracker_domain/use_case/CalculateMealNutrients.kt
+git add tracker/tracker_domain/src/main/java/com/tylerpalcic/tracker_domain/use_case/CalculateMealNutrients.kt
 git commit -m "Fix BMR calculation: switch to Mifflin-St Jeor with imperial units"
 ```
 

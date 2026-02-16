@@ -1,0 +1,222 @@
+package com.tylerpalcic.tracker_presentation.overview
+
+import android.util.Log
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.tylerpalcic.core.domain.data_store.UserDataStore
+import com.tylerpalcic.core.util.UiEvent
+import com.tylerpalcic.tracker_domain.model.BurnedCalories
+import com.tylerpalcic.tracker_domain.model.MealType
+import com.tylerpalcic.tracker_domain.use_case.TrackerUseCases
+import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.receiveAsFlow
+import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
+import javax.inject.Inject
+
+@HiltViewModel
+class TrackerOverviewViewModel @Inject constructor(
+    private val userDataStore: UserDataStore,
+    private val trackerUseCases: TrackerUseCases
+) : ViewModel() {
+
+    private val _uiState = MutableStateFlow(TrackerOverviewState())
+    val uiState = _uiState.asStateFlow()
+
+    private val _uiEvent = Channel<UiEvent>()
+    val uiEvent = _uiEvent.receiveAsFlow()
+
+    val userInfo = userDataStore.loadUserInfo()
+        .stateIn(
+            started = SharingStarted.WhileSubscribed(5_000),
+            scope = viewModelScope,
+            initialValue = null
+        )
+
+    private var getsFoodForDateJob: Job? = null
+
+    init {
+        refreshFoods()
+        viewModelScope.launch {
+            userDataStore.saveShouldShowOnBoarding(false)
+        }
+    }
+
+    fun onEvent(event: TrackerOverviewEvent) {
+        when (event) {
+            TrackerOverviewEvent.OnNextDayClick -> {
+                _uiState.update { state ->
+                    state.copy(
+                        date = state.date.plusDays(1)
+                    )
+                }
+                refreshFoods()
+            }
+
+            is TrackerOverviewEvent.OnDeleteTrackedFoodClick -> {
+                viewModelScope.launch {
+                    trackerUseCases.deleteTrackedFood.execute(event.trackedFood)
+                    refreshFoods()
+                }
+            }
+
+            TrackerOverviewEvent.OnPreviousDayClick -> {
+                _uiState.update { state ->
+                    state.copy(
+                        date = state.date.minusDays(1)
+                    )
+                }
+                refreshFoods()
+            }
+
+            is TrackerOverviewEvent.OnToggleMealClick -> {
+                _uiState.update { state ->
+                    state.copy(
+                        meals = state.meals
+                            .map { currentMeal ->
+                                if (currentMeal == event.meal) {
+                                    currentMeal.copy(
+                                        isExpanded = !currentMeal.isExpanded
+                                    )
+                                } else currentMeal
+                            }
+                    )
+                }
+            }
+
+            is TrackerOverviewEvent.OnShowRecentFoods -> {
+                viewModelScope.launch {
+                    val recentFoods = trackerUseCases.getRecentFoods.execute(event.mealType)
+                    _uiState.update { state ->
+                        state.copy(
+                            recentFoods = recentFoods,
+                            showRecentSheet = true,
+                            recentSheetMealType = event.mealType
+                        )
+                    }
+                }
+            }
+
+            TrackerOverviewEvent.OnDismissRecentSheet -> {
+                _uiState.update { state ->
+                    state.copy(
+                        showRecentSheet = false,
+                        recentFoods = emptyList(),
+                        recentSheetMealType = null
+                    )
+                }
+            }
+
+            is TrackerOverviewEvent.OnAddRecentFood -> {
+                viewModelScope.launch {
+                    val today = _uiState.value.date
+                    trackerUseCases.trackFood.execute(
+                        event.food.copy(id = null, date = today)
+                    )
+                    refreshFoods()
+                }
+            }
+
+            is TrackerOverviewEvent.OnCopyYesterdayMeal -> {
+                viewModelScope.launch {
+                    val today = _uiState.value.date
+                    val yesterday = today.minusDays(1)
+                    trackerUseCases.copyMealFromDate.execute(yesterday, today, event.mealType)
+                    refreshFoods()
+                }
+            }
+
+            TrackerOverviewEvent.OnBurnedCaloriesClick -> {
+                _uiState.update { state ->
+                    state.copy(showBurnedCaloriesDialog = true)
+                }
+            }
+
+            is TrackerOverviewEvent.OnBurnedCaloriesEnter -> {
+                val calories = event.calories.toIntOrNull() ?: 0
+                if (calories >= 0) {
+                    viewModelScope.launch {
+                        trackerUseCases.upsertBurnedCalories.execute(
+                            BurnedCalories(
+                                calories = calories,
+                                date = _uiState.value.date
+                            )
+                        )
+                        _uiState.update { it.copy(showBurnedCaloriesDialog = false) }
+                        refreshFoods()
+                    }
+                }
+            }
+
+            TrackerOverviewEvent.OnDismissBurnedCaloriesDialog -> {
+                _uiState.update { state ->
+                    state.copy(showBurnedCaloriesDialog = false)
+                }
+            }
+        }
+    }
+
+    private fun refreshFoods() {
+        getsFoodForDateJob?.cancel()
+        getsFoodForDateJob = viewModelScope.launch {
+            val burned = trackerUseCases.getBurnedCaloriesForDate.execute(_uiState.value.date)
+            trackerUseCases.getFoodsForDate
+                .execute(_uiState.value.date)
+                .onEach { foods ->
+                    userInfo.value?.let { userInfo ->
+                        val nutrientsResult = trackerUseCases.calculateMealNutrients.execute(
+                            trackedFoods = foods,
+                            userInfo = userInfo,
+                            burnedCalories = burned
+                        )
+                        Log.d("nutrientsResult", nutrientsResult.toString())
+
+                        val yesterday = _uiState.value.date.minusDays(1)
+                        val yesterdayCounts = trackerUseCases.copyMealFromDate.getMealCountsForDate(yesterday)
+
+                        _uiState.update { state ->
+                            state.copy(
+                                totalCarbs = nutrientsResult.totalCarbs,
+                                totalProtein = nutrientsResult.totalProtein,
+                                totalFat = nutrientsResult.totalFat,
+                                totalCalories = nutrientsResult.totalCalories,
+                                carbsGoal = nutrientsResult.carbsGoal,
+                                proteinGoal = nutrientsResult.proteinGoal,
+                                fatGoal = nutrientsResult.fatGoal,
+                                caloriesGoal = nutrientsResult.caloriesGoal,
+                                burnedCalories = nutrientsResult.burnedCalories,
+                                baseCaloriesGoal = nutrientsResult.baseCaloriesGoal,
+                                trackedFoods = foods,
+                                yesterdayMealCounts = yesterdayCounts,
+                                meals = state.meals.map {
+                                    val nutrientsForMeal =
+                                        nutrientsResult.mealNutrients[it.mealType]
+                                            ?: return@map it.copy(
+                                                carbs = 0,
+                                                protein = 0,
+                                                fat = 0,
+                                                calories = 0
+                                            )
+                                    it.copy(
+                                        carbs = nutrientsForMeal.carbs,
+                                        protein = nutrientsForMeal.protein,
+                                        fat = nutrientsForMeal.fat,
+                                        calories = nutrientsForMeal.calories
+                                    )
+                                }
+                            )
+                        }
+
+                    }
+                }.launchIn(viewModelScope)
+        }
+    }
+}

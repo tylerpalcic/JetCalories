@@ -1,0 +1,26 @@
+package com.tylerpalcic.tracker_presentation.overview
+
+import com.tylerpalcic.tracker_domain.model.MealType
+import com.tylerpalcic.tracker_domain.model.TrackedFood
+import java.time.LocalDate
+
+data class TrackerOverviewState(
+    val totalCarbs: Int = 0,
+    val totalProtein: Int = 0,
+    val totalFat: Int = 0,
+    val totalCalories: Int = 0,
+    val carbsGoal: Int = 0,
+    val proteinGoal: Int = 0,
+    val fatGoal: Int = 0,
+    val caloriesGoal: Int = 0,
+    val burnedCalories: Int = 0,
+    val baseCaloriesGoal: Int = 0,
+    val date: LocalDate = LocalDate.now(),
+    val trackedFoods: List<TrackedFood> = emptyList(),
+    val meals: List<Meal> = defaultMeals,
+    val recentFoods: List<TrackedFood> = emptyList(),
+    val showRecentSheet: Boolean = false,
+    val recentSheetMealType: MealType? = null,
+    val yesterdayMealCounts: Map<MealType, Int> = emptyMap(),
+    val showBurnedCaloriesDialog: Boolean = false
+)
