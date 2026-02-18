@@ -9,5 +9,8 @@ data class TrackerUseCases(
     val getRecentFoods: GetRecentFoods,
     val copyMealFromDate: CopyMealFromDate,
     val upsertBurnedCalories: UpsertBurnedCalories,
-    val getBurnedCaloriesForDate: GetBurnedCaloriesForDate
+    val getBurnedCaloriesForDate: GetBurnedCaloriesForDate,
+    val upsertWeightEntry: UpsertWeightEntry,
+    val getWeightEntries: GetWeightEntries,
+    val getLatestWeight: GetLatestWeight
 )

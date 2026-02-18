@@ -9,7 +9,10 @@ import com.tylerpalcic.tracker_domain.use_case.SearchFood
 import com.tylerpalcic.tracker_domain.use_case.TrackFood
 import com.tylerpalcic.tracker_domain.use_case.CopyMealFromDate
 import com.tylerpalcic.tracker_domain.use_case.GetBurnedCaloriesForDate
+import com.tylerpalcic.tracker_domain.use_case.GetLatestWeight
+import com.tylerpalcic.tracker_domain.use_case.GetWeightEntries
 import com.tylerpalcic.tracker_domain.use_case.UpsertBurnedCalories
+import com.tylerpalcic.tracker_domain.use_case.UpsertWeightEntry
 import com.tylerpalcic.tracker_domain.use_case.GetRecentFoods
 import com.tylerpalcic.tracker_domain.use_case.TrackerUseCases
 import dagger.Module
@@ -37,6 +40,9 @@ object TrackerDomainModule {
             getRecentFoods = GetRecentFoods(repository),
             copyMealFromDate = CopyMealFromDate(repository),
             upsertBurnedCalories = UpsertBurnedCalories(repository),
-            getBurnedCaloriesForDate = GetBurnedCaloriesForDate(repository)
+            getBurnedCaloriesForDate = GetBurnedCaloriesForDate(repository),
+            upsertWeightEntry = UpsertWeightEntry(repository, dataStore),
+            getWeightEntries = GetWeightEntries(repository),
+            getLatestWeight = GetLatestWeight(repository)
         )
 }

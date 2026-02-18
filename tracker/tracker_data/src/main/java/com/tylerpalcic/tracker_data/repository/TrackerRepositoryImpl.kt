@@ -2,6 +2,7 @@ package com.tylerpalcic.tracker_data.repository
 
 import android.util.Log
 import com.tylerpalcic.tracker_data.local.dao.TrackerDao
+import com.tylerpalcic.tracker_data.mapper.toDomain
 import com.tylerpalcic.tracker_data.mapper.toEntity
 import com.tylerpalcic.tracker_domain.model.BurnedCalories
 import com.tylerpalcic.tracker_data.mapper.toTrackableFood
@@ -10,6 +11,7 @@ import com.tylerpalcic.tracker_data.remote.OpenFoodApi
 import com.tylerpalcic.tracker_domain.model.MealType
 import com.tylerpalcic.tracker_domain.model.TrackableFood
 import com.tylerpalcic.tracker_domain.model.TrackedFood
+import com.tylerpalcic.tracker_domain.model.WeightEntry
 import com.tylerpalcic.tracker_domain.repository.TrackerRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
@@ -85,4 +87,27 @@ class TrackerRepositoryImpl @Inject constructor(
             month = date.monthValue,
             year = date.year
         )?.calories ?: 0
+
+    override suspend fun upsertWeightEntry(weightEntry: WeightEntry) {
+        val existing = dao.getWeightEntryForDate(
+            day = weightEntry.date.dayOfMonth,
+            month = weightEntry.date.monthValue,
+            year = weightEntry.date.year
+        )
+        dao.upsertWeightEntry(
+            weightEntry.toEntity().copy(id = existing?.id)
+        )
+    }
+
+    override suspend fun getWeightEntryForDate(date: LocalDate): WeightEntry? =
+        dao.getWeightEntryForDate(
+            day = date.dayOfMonth,
+            month = date.monthValue,
+            year = date.year
+        )?.toDomain()
+
+    override fun getAllWeightEntries(): Flow<List<WeightEntry>> =
+        dao.getAllWeightEntries().map { entities ->
+            entities.map { it.toDomain() }
+        }
 }

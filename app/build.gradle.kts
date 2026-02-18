@@ -65,6 +65,7 @@ dependencies {
     implementation(Compose.material)
     implementation(Compose.runtime)
     implementation(Compose.navigation)
+    implementation(Compose.icons)
     implementation(Compose.viewModelCompose)
     implementation(Compose.activityCompose)
 

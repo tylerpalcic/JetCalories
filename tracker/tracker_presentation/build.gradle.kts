@@ -8,4 +8,6 @@ dependencies {
 
     "implementation"(Coil.coilCompose)
     "implementation"(project(Modules.coreUi))
+
+    "implementation"(Vico.compose)
 }

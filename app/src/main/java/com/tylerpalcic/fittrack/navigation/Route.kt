@@ -10,6 +10,7 @@ sealed class Route(val route: String) {
     object ActivityLevel : Route("activity")
     object Goal : Route("goal")
     object TrackerOverview : Route("tracker_overview")
+    object WeightTracker : Route("weight_tracker")
 
     object Search : Route("search/{mealName}/{dayOfMonth}/{month}/{year}") {
         fun createRoute(

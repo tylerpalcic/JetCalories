@@ -7,6 +7,7 @@ import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import com.tylerpalcic.tracker_data.local.entity.BurnedCaloriesEntity
 import com.tylerpalcic.tracker_data.local.entity.TrackedFoodEntity
+import com.tylerpalcic.tracker_data.local.entity.WeightEntryEntity
 import kotlinx.coroutines.flow.Flow
 
 @Dao
@@ -56,4 +57,18 @@ interface TrackerDao {
         """
     )
     suspend fun getBurnedCaloriesForDate(day: Int, month: Int, year: Int): BurnedCaloriesEntity?
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun upsertWeightEntry(entity: WeightEntryEntity)
+
+    @Query(
+        """
+            SELECT * FROM weightentryentity
+            WHERE dayOfMonth = :day AND month = :month AND year = :year
+        """
+    )
+    suspend fun getWeightEntryForDate(day: Int, month: Int, year: Int): WeightEntryEntity?
+
+    @Query("SELECT * FROM weightentryentity ORDER BY year ASC, month ASC, dayOfMonth ASC")
+    fun getAllWeightEntries(): Flow<List<WeightEntryEntity>>
 }

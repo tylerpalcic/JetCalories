@@ -8,9 +8,13 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.ArrowForward
+import androidx.compose.material.icons.rounded.FitnessCenter
+import androidx.compose.material.icons.rounded.Restaurant
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.NavigationBar
+import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
@@ -53,6 +57,7 @@ import com.tylerpalcic.onboarding_presentation.welcome.WelcomeScreen
 import com.tylerpalcic.tracker_presentation.add_food_item.AddFoodItemScreen
 import com.tylerpalcic.tracker_presentation.overview.TrackerOverviewScreen
 import com.tylerpalcic.tracker_presentation.search.SearchScreen
+import com.tylerpalcic.tracker_presentation.weight.WeightTrackerScreen
 import com.google.android.play.core.appupdate.AppUpdateManager
 import com.google.android.play.core.appupdate.AppUpdateManagerFactory
 import com.google.android.play.core.appupdate.AppUpdateOptions
@@ -126,6 +131,11 @@ class MainActivity : ComponentActivity() {
                     scope.launch { snackbarHostState.showSnackbar(message) }
                 }
 
+                val showBottomNav = currentRoute in listOf(
+                    Route.TrackerOverview.route,
+                    Route.WeightTracker.route
+                )
+
                 Scaffold(
                     snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
                     floatingActionButton = {
@@ -149,6 +159,48 @@ class MainActivity : ComponentActivity() {
                                 },
                                 onClick = { fabOnClick?.invoke() }
                             )
+                        }
+                    },
+                    bottomBar = {
+                        if (showBottomNav) {
+                            NavigationBar {
+                                NavigationBarItem(
+                                    selected = currentRoute == Route.TrackerOverview.route,
+                                    onClick = {
+                                        if (currentRoute != Route.TrackerOverview.route) {
+                                            navController.navigate(Route.TrackerOverview.route) {
+                                                popUpTo(Route.TrackerOverview.route) { inclusive = true }
+                                                launchSingleTop = true
+                                            }
+                                        }
+                                    },
+                                    icon = {
+                                        Icon(
+                                            imageVector = Icons.Rounded.Restaurant,
+                                            contentDescription = "Food"
+                                        )
+                                    },
+                                    label = { Text("Food") }
+                                )
+                                NavigationBarItem(
+                                    selected = currentRoute == Route.WeightTracker.route,
+                                    onClick = {
+                                        if (currentRoute != Route.WeightTracker.route) {
+                                            navController.navigate(Route.WeightTracker.route) {
+                                                popUpTo(Route.TrackerOverview.route) { inclusive = false }
+                                                launchSingleTop = true
+                                            }
+                                        }
+                                    },
+                                    icon = {
+                                        Icon(
+                                            imageVector = Icons.Rounded.FitnessCenter,
+                                            contentDescription = "Weight"
+                                        )
+                                    },
+                                    label = { Text("Weight") }
+                                )
+                            }
                         }
                     }
 
@@ -328,6 +380,9 @@ class MainActivity : ComponentActivity() {
                                     )
                                 }
                             )
+                        }
+                        composable(Route.WeightTracker.route) {
+                            WeightTrackerScreen()
                         }
                         composable(
                             route = Route.AddFoodItem.route,
